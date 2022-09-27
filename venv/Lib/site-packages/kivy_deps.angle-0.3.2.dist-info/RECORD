@@ -1,0 +1,12 @@
+../../share/angle/bin/d3dcompiler_47.dll,sha256=cddmtHQsqfdCK7Lvw9wD8s7lCaWkPSQedIzaeqrCS_Q,4895184
+../../share/angle/bin/libEGL.dll,sha256=hiPc5y6eywjHCHzne3k7Oc95OaNgWu4G1vUMIBNww4k,414208
+../../share/angle/bin/libGLESv2.dll,sha256=M2aYJUYEv7Wytq-X3FV7lOSerzMQWQte0fDotrQIPb8,6263808
+kivy_deps.angle-0.3.2.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+kivy_deps.angle-0.3.2.dist-info/METADATA,sha256=WZKD0bKJz633o7V5HboEJSETkpk3F7R89nx-7kcAAd8,233
+kivy_deps.angle-0.3.2.dist-info/RECORD,,
+kivy_deps.angle-0.3.2.dist-info/WHEEL,sha256=fVcVlLzi8CGi_Ul8vjMdn8gER25dn5GBg9E6k9z41-Y,100
+kivy_deps.angle-0.3.2.dist-info/top_level.txt,sha256=YMwhIe4C46UWpn5ggwslPdp7LkNw5RbCnvMcqI6e78Q,10
+kivy_deps/__init__.py,sha256=h-QyvMVzDNpT3jyVskcSbUVFXxGCRxieFPrvTveZG9k,64
+kivy_deps/__pycache__/__init__.cpython-39.pyc,,
+kivy_deps/angle/__init__.py,sha256=K_tQVOe74kqr94JlWCu4ogUFVSZ49XkRtjoqpCtfbeE,676
+kivy_deps/angle/__pycache__/__init__.cpython-39.pyc,,
