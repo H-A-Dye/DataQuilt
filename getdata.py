@@ -34,3 +34,13 @@ part1 = "https://www.ncei.noaa.gov/access/services/data/v1?dataset="
 mytoken = ***REMOVED***
 
 mybaseurl = "https://www.ncei.noaa.gov/cdo-web/api/v2/{endpoint}"
+myurl = 'https://www.ncei.noaa.gov/cdo-web/api/v2/datasets'
+
+response = requests.get(myurl, headers=head)
+
+Option1={"uid":"gov.noaa.ncdc:C00861","mindate":"1763-03-01","maxdate":"2022-10-02","name":"Daily Summaries","datacoverage":1,"id":"GHCND"}
+myurl3='https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&locationid=ZIP:28801&datatype=TMIN&datatype=TMAX&startdate=2010-05-01&enddate=2010-05-01'
+
+
+myurl4='https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&locationid=ZIP:28801&datatype=TMIN&datatype=TMAX&startdate=2010-05-01&enddate=2010-05-30'
+
