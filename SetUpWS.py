@@ -123,14 +123,16 @@ def attach_distances(lat, long):
     thedistances = calculate_distances(lat, long)
     WeatherStations_df['distance'] = thedistances
 
+def sort_years_weatherstat(year=2022):
+    """ sort weather stations by end year"""
+    WeatherStations_df['end'] = WeatherStations_df['end'].astype('int')
+    datefilter = WeatherStations_df['end'] >= year
+    WeatherStations_df = WeatherStations_df[datefilter]
+
 
 def sort_get_min_dist_weatherstat():
-    """  sort the weather stations by TMAX and distance
-    :return:
+    """  sort the weather stations by distance
     """
-    WeatherStations_df['end'] = WeatherStations_df['end'].astype('int')
-    datefilter = WeatherStations_df['end'] >= 2022
-    filteredstations = WeatherStations_df[datefilter]
-    filteredstations = filteredstations.sort_values(by=['distance'])
-    return filteredstations[0:10]
+    WeatherStations_df = WeatherStations_df.sort_values(by=['distance'])
+    return WeatherStations_df[0:10]
     # find the nearest weather station by year
