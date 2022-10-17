@@ -21,7 +21,7 @@ URLINVENTORY = "https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.tx
 
 # Clean this area up -  token, URL BITs, with spots for Station and YEAR
 STATIONID ="USW00013802"
-YEAR="2021"
+YEAR="2020"
 ZIP="22801"
 MYTOKEN = ***REMOVED***
 
@@ -39,10 +39,16 @@ DayData=namedtuple('month', 'day')
 
 mydict = dict()
 
+def read_short_list():
+    """ get the station IDS"""
+    mydf=pd.read_csv(SHORTLIST)
+    return mydf
+
+
 def get_temps_weatherstation(station =STATIONID, theyear=YEAR):
     """ request data from NOAA and return the response"""
     myurllist = [
-    'https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&datatypeid=TMAX&stationid=GHCND:',station,'&startdate=',theyear,'-01-01&enddate=', theyear,'-12-31&limit=400']
+    'https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&datatypeid=TMIN&datatypeid=TMAX&stationid=GHCND:',station,'&startdate=',theyear,'-01-01&enddate=', theyear,'-02-31&limit=400']
     myurl="".join(myurllist)
     response = requests.get(myurl, headers=head)
     response= requests.get(myurl,headers=head).json()
@@ -57,12 +63,26 @@ def write_df_to_csv(mydataframe, name):
 
 
 
-def get_temps_p(zipco =ZIP, theyear =YEAR):
+def get_temps_flex(startdate,edate,station=STATIONID,):
     # implement with zipcode and year options
-    myurl = ['https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&datatypeid=TMIN&datatypeid=TMAX&locationid=ZIP:',ZIP,'&startdate=',YEAR,'-01-01&enddate=',YEAR,'-12-31&limit=50']
-    myurl ="".join(myurl)
+    myurllist = [
+        'https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&datatypeid=TMAX&limit=1000&stationid=GHCND:',
+        station, '&startdate=', startdate ,'&enddate=', edate]
+    myurl = "".join(myurllist)
     response=requests.get(myurl,headers =head)
     return(response)
+
+def get_temps_flex2(startdate,station=STATIONID,):
+    # implement with zipcode and year options
+    myurllist = [
+        'https://www.ncei.noaa.gov/cdo-web/api/v2/data?datasetid=GHCND&datatypeid=TMIN&datatypeid=TMAX&stationid=GHCND:',
+        station, '&startdate=', startdate ,'&limit=400']
+    myurl = "".join(myurllist)
+
+    response=requests.get(myurl,headers =head)
+    return(response)
+
+
 
 # putting in a these as helper functions. there was a definite pause when
 # i requested the data, so having data stored to work with as I build the rest of the program will be helpful.
