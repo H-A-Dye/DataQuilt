@@ -56,12 +56,23 @@ def get_temps_weatherstation(station =STATIONID, theyear=YEAR):
     mydf = pd.DataFrame(response)
     return mydf
 
+def get_temps_weatherstation_revised(theyear = YEAR, station = STATIONID):
+    myurllist=['https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=PRCP,SNOW,TMAX,TMIN&stations=',station,'&startDate=',theyear,'-01-01&endDate=',theyear,'-12-31&format=json']
+    myurl = "".join(myurllist)
+    response = requests.get(myurl, headers=head)
+    response = requests.get(myurl, headers=head).json()
+    #response = response.get("results")
+    mydf = pd.DataFrame(response)
+    return mydf
+
+
+
 def write_df_to_csv(mydataframe, name):
     """ Helper function to store data """
     mydataframe.to_csv(Path.cwd().joinpath(name))
 
-
-
+# https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation
+# Divide your results by 10, multiply by 9/5 + 32 to convert to F (or whatever you need to do).
 
 def get_temps_flex(startdate,edate,station=STATIONID,):
     # implement with zipcode and year options
