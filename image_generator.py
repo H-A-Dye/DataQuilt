@@ -15,9 +15,9 @@ minv=mydata.TMIN
 therange= max(mydata.TMAX) - min(mydata.TMAX)
 bin = therange// 15
 
-FAKEDATA = [random.randint(0,14) for x in range(366)]
+FAKEDATA = [random.randint(0,14) for x in range(365)]
 
-COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31,11:30, 12:31  }
+COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31  }
 
 mycolordict=dict()
 colorscore=[]
@@ -38,26 +38,20 @@ def create_a_color_dict_fake():
 
 COLOR_DATE_DICT=create_a_color_dict_fake()
 COLORBASE=(0,0,256)
-STEP = 256/15
+STEP = 256//15
 
 
 def make_color_list():
     colorlist=[]
     for x in range(15):
-        newvalue = COLORBASE + (x*STEP,0,-x*STEP)
+        newvalue = (0 + x*STEP,0,256 - x*STEP)
         colorlist.append(newvalue)
     return colorlist
 
 COLORLIST =make_color_list()
 
-im = Image.new(mode ="RGB",size=(270, 370), color=(256,256,256) )
-draw=ImageDraw.Draw(im)
-draw.line([0,30,270, 30], fill = 1, width=1)
-draw.line([0,340,270,340],fill=1, width=1)
-draw.rectangle([20,30, 30,40],fill=(0,0,255), outline=1)
-# im.show()
 
-def add_month_to_image(month_number=1):
+def add_month_to_image(drawobject, month_number=1):
     days = COMMONDAYS.get(month_number)
     if len(FAKEDATA)==366 and month_number==2:
         days = days+1
@@ -67,4 +61,16 @@ def add_month_to_image(month_number=1):
         y1=30+x*10
         y2=y1+10
         colorlevel=COLOR_DATE_DICT.get((month_number,x+1))
-        draw.rectangle([x1,y1,x2,y2], fill=COLORLIST[colorlevel],outline=1)
+        if colorlevel is None:
+            print("uh oh")
+            colorlevel=1
+        drawobject.rectangle([x1,y1,x2,y2], fill=COLORLIST[colorlevel],outline=1)
+
+
+im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
+draw = ImageDraw.Draw(im)
+draw.line([0, 30, 270, 30], fill=1, width=1)
+draw.line([0, 340, 270, 340], fill=1, width=1)
+for x in range(12):
+    add_month_to_image(draw, x+1)
+
