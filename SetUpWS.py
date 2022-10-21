@@ -1,5 +1,4 @@
-""" 
-This module selects weather stations that provide TMAX data for the requested year 
+""" This module selects weather stations that provide TMAX data for the requested year 
 from the inventory of GHCND stations. The selected stations are sorted by 
 distance and the top 10 are returned.
 References:
@@ -46,8 +45,8 @@ Returns:
             ind = newv.find(' ')
             mylong = newv[0:ind]
             newv = newv[ind:].lstrip()
-            s = newv.split(' ')
-            mystation = Station(name=myst, lat=mylat, long=mylong, start=s[1], end=s[2].strip('\n'))
+            splitlist = newv.split(' ')
+            mystation = Station(name=myst, lat=mylat, long=mylong, start=splitlist[1], end=splitlist[2].strip('\n'))
             mywslist.append(mystation)
     return mywslist
 
@@ -64,11 +63,10 @@ Returns:
     mydf = pd.DataFrame(list_data)
     return mydf
 
+WeatherStation_df =data_into_df(load_weatherstation_inventory())
 
-weatherstations_df =data_into_df(load_weatherstation_inventory())
 
-
-def write_df_to_file(df, name):
+def write_df_to_file(data_frame, name):
     """Description of the function/method.
         Helper function to save the data frame to a local file for reuse
 Parameters:
@@ -77,7 +75,7 @@ Parameters:
 Returns:
     <variable>: Writes the data frame to a csv file
 """
-    df.to_csv(name)
+    data_frame.to_csv(name)
 
 
 
@@ -104,9 +102,9 @@ def convert_latlong(value):
 
     Returns: <variable>: returns latitude or longitude in radians
     """
-    v2, v1 = math.modf(value)
-    v2 = v2 * 100 / 60
-    val = v1 + v2
+    v2dec_part, v1int_part = math.modf(value)
+    v2dec_part = v2dec_part * 100 / 60
+    val = v1int_part + v2dec_part
     val = val * math.pi / 180
     return val
 
@@ -124,7 +122,6 @@ Parameters:
 Returns:
     <variable>: Distance in nautical miles
 """
-    """  """
     rho1 = convert_latlong(lat1)
     rho2 = convert_latlong(lat2)
     lam1 = convert_latlong(long1)
@@ -136,32 +133,31 @@ Returns:
 
 
 # my latitude and longitude for testing
-mylat = 38.59
-mylong = -89.92
+OFLAT = 38.59
+OFLONG = -89.92
+LAXLAT = 33.57
+LAXLONG = 118.24
 
-laxlat = 33.57
-laxlong = 118.24
 
-
-def calculate_distances(lat1, long1):
+def calculate_distances(lat1, long1, data_frame = WeatherStation_df):
     """Description of the function/method.
     Calculates the distance between the given latitude and longitude for all weather stations in 
-    the inventory
+    the inventory.
 Parameters:
     <param>: latitude and longitude (floats)
 Returns:
     <variable>: Returns a list of distances
 """
     mydistances = []
-    n = len(WeatherStations_df)
-    for i in range(n):
-        lat2 = float(WeatherStations_df.iloc[i].lat)
-        long2 = float(WeatherStations_df.iloc[i].long)
+    thelength = len(data_frame)
+    for i in range(thelength):
+        lat2 = float(data_frame.iloc[i].lat)
+        long2 = float(data_frame.iloc[i].long)
         mydistances.append(dist_between(lat1, long1, lat2, long2))
     return mydistances
 
 
-def attach_distances_to_inventory(lat, long):
+def attach_distances_to_inventory(lat, long, data_frame = WeatherStation_df):
     """Description of the function/method.
 Given a latitude and longitude, it calls the function to compute the 
 list of distances between the given and each weather station. This is attached
@@ -173,25 +169,26 @@ Returns:
     <variable>: Distances attached to the weather station inventory.
 """
     thedistances = calculate_distances(lat, long)
-    WeatherStations_df['distance'] = thedistances
+    data_frame['distance'] = thedistances
+    return data_frame
 
-def sort_years_weatherstat(year=2022):
+def sort_years_weatherstat(year=2022, data_frame =WeatherStation_df):
     """Description of the function/method.
     Filters the weather stations by year - returns only weather stations that are available for 
     the given year
 Parameters:
     <param>: Year 
-
 Returns:
     <variable>: Weather Station Inventory data frame
 """
-    
-    WeatherStations_df['end'] = WeatherStations_df['end'].astype('int')
-    datefilter = WeatherStations_df['end'] >= year and WeatherStations_df['start']<=year
-    WeatherStations_df = WeatherStations_df[datefilter]
+    data_frame['end'] =data_frame['end'].astype('int')
+    data_frame['start']=data_frame['start'].astype('int')
+    datefilter =data_frame['end'] >= year and data_frame['start']<=year
+    data_frame =data_frame[datefilter]
+    return data_frame
 
 
-def sort_get_min_dist_weatherstat():
+def sort_get_min_dist_weatherstat(data_frame = WeatherStation_df):
     """Description of the function/method.
     Sorts the weather station data frame by distance and returns 
     the top 10 closest weather stations.
@@ -201,6 +198,6 @@ Parameters:
 Returns:
     <variable>:  Data frame of 10 weather stations
 """
-    WeatherStations_df = WeatherStations_df.sort_values(by=['distance'])
-    return WeatherStations_df[0:10]
+    data_frame =data_frame.sort_values(by=['distance'])
+    return data_frame[0:10]
     # find the nearest weather station by year
