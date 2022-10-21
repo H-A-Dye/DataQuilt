@@ -1,36 +1,45 @@
-""" This module selects weather stations that provide TMAX data for the requested year from the inventory of
-GHCND stations. The selected stations are sorted by distance and the top 10 are returned
-reference package 1: https://github.com/gojiplus/get-weather-data/blob/master/zip2ws/zip2ws.pyreference
-package 2: https://github.com/paulokuong/noaa"""
+""" 
+This module selects weather stations that provide TMAX data for the requested year 
+from the inventory of GHCND stations. The selected stations are sorted by 
+distance and the top 10 are returned.
+References:
+    1: https://github.com/gojiplus/get-weather-data/blob/master/zip2ws/zip2ws.pyreference
+    2: https://github.com/paulokuong/noaa
+"""
 import pathlib
 from collections import namedtuple
+from urllib.request import urlretrieve
 import math
 import pandas as pd
-from urllib.request import urlretrieve
 from geopy.geocoders import Nominatim
 
 PATH = pathlib.Path().absolute()
 LOCALFILE = pathlib.Path().absolute().joinpath('ghcnd-inventory.txt')
 
-WeatherStation = 'https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt'
-urlretrieve(WeatherStation, LOCALFILE)
+WEATHERSTATIONINVENTORY = 'https://www1.ncdc.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt'
+urlretrieve(WEATHERSTATIONINVENTORY, LOCALFILE)
 
-WeatherStation = LOCALFILE
+WEATHERSTATIONINVENTORY = LOCALFILE
 
 Station = namedtuple("Station", {'name', 'lat', 'long', 'start', 'end'})
 
 
-def filter_ws():
-    """Loads the weather station inventory file and places each station as a named tuple into
-        a list"""
+def load_weatherstation_inventory():
+    """Description of the function/method.
+    This loads the gchnd inventory of weather stations into a list
+Parameters:
+    <param>: none, loads local file
+Returns:
+    <variable>: Returns a list of named tuples of weather stations
+"""
     mywslist = []
     with open(LOCALFILE, encoding='utf8') as t_file:
         mydata = t_file.readlines()
-    for x in mydata:
-        if x.find('TMAX') != -1:
-            ind = x.find(' ')
-            myst = x[0:ind]
-            newv = x[ind:].lstrip()
+    for xline in mydata:
+        if xline.find('TMAX') != -1:
+            ind = xline.find(' ')
+            myst = xline[0:ind]
+            newv = xline[ind:].lstrip()
             ind = newv.find(' ')
             mylat = newv[0:ind]
             newv = newv[ind:].lstrip()
@@ -38,45 +47,63 @@ def filter_ws():
             mylong = newv[0:ind]
             newv = newv[ind:].lstrip()
             s = newv.split(' ')
-
             mystation = Station(name=myst, lat=mylat, long=mylong, start=s[1], end=s[2].strip('\n'))
             mywslist.append(mystation)
     return mywslist
 
 
-def data_into_df(data):
-    """ load list of stations into a data frame
-    :param data: list of
-    :return: 
-    """
-    mydf = pd.DataFrame(data)
+def data_into_df(list_data):
+    """Description of the function/method.
+        Helper function to load the list of data into a dataframe
+Parameters:
+    <param>: list of data
+
+Returns:
+    <variable>: returns a dataframe of the data
+"""
+    mydf = pd.DataFrame(list_data)
     return mydf
 
 
-WeatherStations_df = data_into_df(filter_ws())
+weatherstations_df =data_into_df(load_weatherstation_inventory())
 
 
 def write_df_to_file(df, name):
-    # write to file
+    """Description of the function/method.
+        Helper function to save the data frame to a local file for reuse
+Parameters:
+    <param>: data frame and file name
+
+Returns:
+    <variable>: Writes the data frame to a csv file
+"""
     df.to_csv(name)
 
 
-# Get the zip code and convert to latitude and longitude using geocoder
 
-# try1 using pygeocoder - this does not work.
 def zip2latlong(zipcode):
-    """
-    positive lat is north, positive long is east
-    attempt1: pygeocoder and switched to geopy's nominatim
-    """
-    geolocator = Nominatim(user_agent="my_app")
+    """Description of the function/method.
+    Returns latitude and longitude based on the function
+Parameters:
+    <param>: US based zipcode
+
+Returns:
+    <variable>: latitude and longitude
+"""
+    mygeolocator = Nominatim(user_agent="my_app")
     country = 'USA'
-    location = geolocator.geocode(str(zipcode) + ',' + country)
+    location = mygeolocator.geocode(str(zipcode) + ',' + country)
     return location.latitude, location.longitude
 
 
 def convert_latlong(value):
-    """Converts latitude or longitude value to radians"""
+    """Description of the function/method.
+        Converts latitude or longitude measurement to radians
+    Parameters:
+    <param>: latitude or longitude float
+
+    Returns: <variable>: returns latitude or longitude in radians
+    """
     v2, v1 = math.modf(value)
     v2 = v2 * 100 / 60
     val = v1 + v2
@@ -85,10 +112,19 @@ def convert_latlong(value):
 
 
 def dist_between(lat1, long1, lat2, long2):
-    """ d=2*asin(sqrt((sin((lat1-lat2)/2))^2 +
+    """Description of the function/method.
+    Computes the distance between two latitudes and longitudes
+    d=2*asin(sqrt((sin((lat1-lat2)/2))^2 +
                       cos(lat1)*cos(lat2)*(sin((lon1-lon2)/2))^2))  from edwilliams.org
      worked example: http://edwilliams.org/avform147.htm#Example
-    convert to radians """
+    convert to radians    
+Parameters:
+    <param>: Two sets of latitude and longitude
+
+Returns:
+    <variable>: Distance in nautical miles
+"""
+    """  """
     rho1 = convert_latlong(lat1)
     rho2 = convert_latlong(lat2)
     lam1 = convert_latlong(long1)
@@ -108,8 +144,14 @@ laxlong = 118.24
 
 
 def calculate_distances(lat1, long1):
-    # pass the lat and long of the zip code
-    # calculate distance to each weather station
+    """Description of the function/method.
+    Calculates the distance between the given latitude and longitude for all weather stations in 
+    the inventory
+Parameters:
+    <param>: latitude and longitude (floats)
+Returns:
+    <variable>: Returns a list of distances
+"""
     mydistances = []
     n = len(WeatherStations_df)
     for i in range(n):
@@ -119,20 +161,46 @@ def calculate_distances(lat1, long1):
     return mydistances
 
 
-def attach_distances(lat, long):
+def attach_distances_to_inventory(lat, long):
+    """Description of the function/method.
+Given a latitude and longitude, it calls the function to compute the 
+list of distances between the given and each weather station. This is attached
+to the weather station inventory.
+Parameters:
+    <param>: Latitude and longitude of a location.
+
+Returns:
+    <variable>: Distances attached to the weather station inventory.
+"""
     thedistances = calculate_distances(lat, long)
     WeatherStations_df['distance'] = thedistances
 
 def sort_years_weatherstat(year=2022):
-    """ sort weather stations by end year"""
+    """Description of the function/method.
+    Filters the weather stations by year - returns only weather stations that are available for 
+    the given year
+Parameters:
+    <param>: Year 
+
+Returns:
+    <variable>: Weather Station Inventory data frame
+"""
+    
     WeatherStations_df['end'] = WeatherStations_df['end'].astype('int')
-    datefilter = WeatherStations_df['end'] >= year
+    datefilter = WeatherStations_df['end'] >= year and WeatherStations_df['start']<=year
     WeatherStations_df = WeatherStations_df[datefilter]
 
 
 def sort_get_min_dist_weatherstat():
-    """  sort the weather stations by distance
-    """
+    """Description of the function/method.
+    Sorts the weather station data frame by distance and returns 
+    the top 10 closest weather stations.
+Parameters:
+    <param>: none
+
+Returns:
+    <variable>:  Data frame of 10 weather stations
+"""
     WeatherStations_df = WeatherStations_df.sort_values(by=['distance'])
     return WeatherStations_df[0:10]
     # find the nearest weather station by year
