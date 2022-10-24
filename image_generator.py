@@ -1,10 +1,10 @@
 from PIL import Image, ImageDraw
 
 import numpy as np
-import matplotlib
 import pandas as pd
 import datetime
-import random
+from collections import namedtuple
+
 
 DayData = namedtuple('month','day')
 TempData = namedtuple('lo','hi')
@@ -12,8 +12,8 @@ TempData = namedtuple('lo','hi')
 MYDATA = pd.read_csv("dataUSW00003960.csv")
 
 
-THERANGE= max(mydata.TMAX) - min(mydata.TMIN)
-BIN_SIZE = therange// 15
+THERANGE= max(MYDATA.TMAX) - min(MYDATA.TMIN)
+BIN_SIZE = THERANGE// 15
 COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31  }
 
 
@@ -39,25 +39,13 @@ Returns:
 
 
 
-
-
-
-
-
-def create_weather_dict(weather_data, temp_dict):
-   """Description of the function/method.
-    Takes the weather data data frame and creates a dictionary
-Parameters:
-    <param>: Weather data frame and temp_dict
-Returns:
-    <variable>: Temperature dictionary
-""" 
+def create_weather_dict(weather_data):
     local_dict={}
     thelength = len(weather_data)
     for i in range(thelength):
-      day_info, temp_info = extract_data(weatherdata.loc[i])
-      if local_dict.get(daydata) is None:
-            local_dict.update({daydata:tempinfo})
+      day_info, temp_info = extract_data(weather_data.loc[i])
+      if local_dict.get(day_info) is None:
+            local_dict.update({day_info:temp_info})
     return local_dict
 
 
