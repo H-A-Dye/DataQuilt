@@ -1,86 +1,69 @@
 from PIL import Image, ImageDraw
 
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 import pandas as pd
 import datetime
 import random
 
+DayData = namedtuple('month','day')
+TempData = namedtuple('lo','hi')
 
-mydata = pd.read_csv("dataUSW00003960.csv")
+MYDATA = pd.read_csv("dataUSW00003960.csv")
+
+
+THERANGE= max(mydata.TMAX) - min(mydata.TMIN)
+BIN_SIZE = therange// 15
+COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31  }
 
 
 
 
 def extract_data(x_entry):
     """Description of the function/method.
-    Move data into a dictionary. 
+    Extra TMIN and TMAX data from a row of the weather data frame
 Parameters:
     <param>: Description of the parameter
-
+    Row from a weather data frame
 Returns:
     <variable>: Description of the return value
+    an updated dictionary
 """
-
-    # get date, Tmax, Tmin from an individual entry
-    mydate = x_entry.get('date')[0:10]
-    # date has empty time data attached
-    mytype = x_entry.get('datatype')
-    myvalue = x_entry.get('value')
+    mydate = x_entry.DATE
     mydate = datetime.datetime.strptime(mydate, "%Y-%m-%d")
     mym = mydate.month
     myd = mydate.day
-    return DayData(mym, myd), {mytype, myvalue}
+    x_tmin = x_entry.TMIN
+    x_tmax = x_entry.TMAX
+    return DayData(mym, myd), TempData(x_tmin, x_tmax)
 
 
 
 
 
-def place_into_dict(daydata, tempinfo):
-"""Description of the function/method.
-   Place extracted data into dictionary for the Pillow module
-   to use
+
+
+
+def create_weather_dict(weather_data, temp_dict):
+   """Description of the function/method.
+    Takes the weather data data frame and creates a dictionary
 Parameters:
-    <param>: Description of the parameter
-    row from a weather data frame
+    <param>: Weather data frame and temp_dict
 Returns:
-    <variable>: Description of the return value
-    Month, Day tuple and Data tuple
-"""    
-    if mydict.get(daydata) is None:
-        mydict.update({daydata:tempinfo})
+    <variable>: Temperature dictionary
+""" 
+    local_dict={}
+    thelength = len(weather_data)
+    for i in range(thelength):
+      day_info, temp_info = extract_data(weatherdata.loc[i])
+      if local_dict.get(daydata) is None:
+            local_dict.update({daydata:tempinfo})
+    return local_dict
 
 
-
-
-maxv = mydata.TMAX
-minv=mydata.TMIN
-
-therange= max(mydata.TMAX) - min(mydata.TMAX)
-bin = therange// 15
-
-FAKEDATA = [random.randint(0,14) for x in range(365)]
-
-COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31  }
-
-mycolordict=dict()
+mycolordict={}
 colorscore=[]
 
-def create_a_color_dict_fake():
-    mycolordict=dict()
-    for i,x in enumerate(mydata.TMAX[0:365]):
-    #newval = x - min(mydata.TMAX)
-    #xscore = newval//bin
-    #colorscore.append(xscore)
-        mydate = datetime.datetime.strptime(mydata.DATE[i], "%Y-%m-%d")
-        mym = mydate.month
-        myd = mydate.day
-
-    #mycolordict.update({(mym,myd): xscore})
-        mycolordict.update({(mym, myd):FAKEDATA[i]})
-    return mycolordict
-
-COLOR_DATE_DICT=create_a_color_dict_fake()
 COLORBASE=(0,0,256)
 STEP = 256//15
 
