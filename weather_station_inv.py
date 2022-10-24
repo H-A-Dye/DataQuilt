@@ -51,20 +51,6 @@ Returns:
     return mywslist
 
 
-def data_into_df(list_data):
-    """Description of the function/method.
-        Helper function to load the list of data into a dataframe
-Parameters:
-    <param>: list of data
-
-Returns:
-    <variable>: returns a dataframe of the data
-"""
-    mydf = pd.DataFrame(list_data)
-    return mydf
-
-WeatherStation_df =data_into_df(load_weatherstation_inventory())
-
 
 def write_df_to_file(data_frame, name):
     """Description of the function/method.
@@ -78,6 +64,22 @@ Returns:
     data_frame.to_csv(name)
 
 
+def sort_years_weatherstat(data_frame,year=2021):
+    """Description of the function/method.
+    Filters the weather stations by year - returns only weather stations that are available for 
+    the given year
+Parameters:
+    <param>: Year 
+Returns:
+    <variable>: Weather Station Inventory data frame
+"""
+    data_frame['end']=data_frame['end'].astype('int')
+    data_frame['start'] = data_frame['start'].astype('int')
+    datefilter =data_frame['end'] >= year 
+    data_frame =data_frame[datefilter]
+    datefilter2 = data_frame['start'] <= year
+    data_frame = data_frame[datefilter2]
+    return data_frame
 
 def zip2latlong(zipcode):
     """Description of the function/method.
@@ -139,7 +141,7 @@ LAXLAT = 33.57
 LAXLONG = 118.24
 
 
-def calculate_distances(lat1, long1, data_frame = WeatherStation_df):
+def calculate_distances(lat1, long1, data_frame):
     """Description of the function/method.
     Calculates the distance between the given latitude and longitude for all weather stations in 
     the inventory.
@@ -157,7 +159,9 @@ Returns:
     return mydistances
 
 
-def attach_distances_to_inventory(lat, long, data_frame = WeatherStation_df):
+
+
+def attach_distances_to_inventory(lat, long, data_frame):
     """Description of the function/method.
 Given a latitude and longitude, it calls the function to compute the 
 list of distances between the given and each weather station. This is attached
@@ -168,27 +172,13 @@ Parameters:
 Returns:
     <variable>: Distances attached to the weather station inventory.
 """
-    thedistances = calculate_distances(lat, long)
+    thedistances = calculate_distances(lat, long, data_frame)
     data_frame['distance'] = thedistances
     return data_frame
 
-def sort_years_weatherstat(year=2022, data_frame =WeatherStation_df):
-    """Description of the function/method.
-    Filters the weather stations by year - returns only weather stations that are available for 
-    the given year
-Parameters:
-    <param>: Year 
-Returns:
-    <variable>: Weather Station Inventory data frame
-"""
-    data_frame['end'] =data_frame['end'].astype('int')
-    data_frame['start']=data_frame['start'].astype('int')
-    datefilter =data_frame['end'] >= year and data_frame['start']<=year
-    data_frame =data_frame[datefilter]
-    return data_frame
 
 
-def sort_get_min_dist_weatherstat(data_frame = WeatherStation_df):
+def sort_get_min_dist_weatherstat(data_frame):
     """Description of the function/method.
     Sorts the weather station data frame by distance and returns 
     the top 10 closest weather stations.
@@ -203,9 +193,10 @@ Returns:
     # find the nearest weather station by year
 
 
-def themainfunction():
+def themainfunction(zipcodestr="62269"):
     """Description of the function/method.
-    Gets the weather station inventory, adds distance data and returns the top 10 closest 
+    Gets the weather station inventory, sorts inventory by year,
+    adds distance data and returns the top 10 closest 
     weather stations as a dataframe. 
 Parameters:
     <param>: Description of the parameter
@@ -213,3 +204,10 @@ Parameters:
 Returns:
     <variable>: Description of the return value
 """
+    invlist = load_weatherstation_inventory()
+    inv_df = pd.DataFrame(invlist) 
+    inv_df = sort_years_weatherstat(inv_df)
+    loc_lat, loc_long = zip2latlong(zipcodestr)
+    inv_df = attach_distances_to_inventory(loc_lat, loc_long,inv_df)
+    shortlist=sort_get_min_dist_weatherstat(inv_df) 
+    write_df_to_file(shortlist, "topten.csv") 
