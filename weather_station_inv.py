@@ -201,3 +201,15 @@ Returns:
     data_frame =data_frame.sort_values(by=['distance'])
     return data_frame[0:10]
     # find the nearest weather station by year
+
+
+def themainfunction():
+    """Description of the function/method.
+    Gets the weather station inventory, adds distance data and returns the top 10 closest 
+    weather stations as a dataframe. 
+Parameters:
+    <param>: Description of the parameter
+
+Returns:
+    <variable>: Description of the return value
+"""
