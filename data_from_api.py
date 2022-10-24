@@ -1,6 +1,7 @@
 """Description of the module.
     Using the list of 10 weather stations from SetUpWeather Stations, the goal is to download 365 days of weather data
- with T-MAX and T-MIN.  
+ with T-MAX and T-MIN.  The list of 10 is Shortlist.csv.  The weather data is in 
+ data USW00003960.csv
 Classes:
     <class>
 
@@ -24,7 +25,7 @@ URLINVENTORY = "https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.tx
 
 
 STATIONID ="USW00013802"
-YEAR="2020"
+YEAR="2021"
 MYTOKEN = "vgMXMUXAOFMvAecQhqyKdZzwBojmbUeb"
 
 head={"token": MYTOKEN}
@@ -32,11 +33,11 @@ head={"token": MYTOKEN}
 
 
 DayData=namedtuple('month', 'day')
-mydict = dict()
+
 
 def read_short_list(file_name = SHORTLIST):
     """Description of the function/method.
-
+            Reads the Shortlist.csv function created by the Get Weather Station module
 Parameters:
     <param>: Reads data frame of weather stations
 
@@ -45,6 +46,18 @@ Returns:
 """
     mydf=pd.read_csv(file_name)
     return mydf
+
+
+def write_df_to_csv(mydataframe, name):
+    """Description of the function/method.
+   Helper function to store weather data
+Parameters:
+    <param>: data frame and file name
+
+Returns:  
+    <variable>: 
+"""
+    mydataframe.to_csv(Path.cwd().joinpath(name))
 
 
 
@@ -61,7 +74,6 @@ Returns:
 """
     myurllist=['https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=PRCP,SNOW,TMAX,TMIN&stations=',station,'&startDate=',theyear,'-01-01&endDate=',theyear,'-12-31&format=json']
     myurl = "".join(myurllist)
-    response = requests.get(myurl, headers=head)
     response = requests.get(myurl, headers=head).json()
     #response = response.get("results")
     mydf = pd.DataFrame(response)
@@ -69,39 +81,21 @@ Returns:
 
 
 
-def write_df_to_csv(mydataframe, name):
+def create_weatherdata_dictionary(ws_list, theyear = "2021"):
     """Description of the function/method.
-   Helper function to store weather data
+    Create a dictionary of  weather data frames from the short list of weather stations 
+    data frame
 Parameters:
-    <param>: data frame and file name
-
-Returns:
-    <variable>: 
-"""
-    mydataframe.to_csv(Path.cwd().joinpath(name))
-
-
-def get_temps_file(file_name = TEMPERATUREFILE):
-    """ helper function to get temperature data from a file; need to change parameters """
-    with open(file_name) as text_file:
-        data=text_file.read()
-
-
-def create_data_dictionary(ws_list, theyear = "2021"):
-    """Description of the function/method.
-    Create a dictionary of weather data frames to fill in 
-    missing values
-Parameters:
-    <param>: Data frame of Weather Stations
+    <param>: Data frame of Weather Stations and year
 
 Returns:
     <variable>: Dictionary of Weather Data Frames
 """
-    local_dict = dict()
+    local_dict = {}
     thelength = len(ws_list)
     for i in range(thelength):
         station_name = ws_list.name.iloc[i]
-        local_df = get_temps_weatherstation_revised("2021",station_name)
+        local_df = get_temps_weatherstation_revised(theyear, station_name)
         local_dict.update({station_name:local_df})
     return local_dict
 
@@ -121,16 +115,16 @@ Returns:
 
 def id_missing_data_dict(local_weather_dict):
     """Description of the function/method.
-    Identify all the missing data
+    Identify all the missing data in a weather data frame
 Parameters:
     <param>: Description of the parameter
-    local weather dictionary
+    dictionary of weather data frames
 Returns:
     <variable>: Description of the return value
-    dictionary of missing indices
+    dictionary of missing indices for each data frame
 """
     thekeys = list(local_weather_dict.keys())
-    missing_dict = dict()
+    missing_dict = {}
     for i in thekeys:
         local_series = local_weather_dict.get(i)
         local_list = identify_missing_data(local_series.TMAX)
@@ -139,13 +133,11 @@ Returns:
 
 def check_for_complete_stations(local_missing_dict):
     """Description of the function/method.
-    Check for stations with all data values
+    Find the weather data frame with the fewest missing values
 Parameters:
-    <param>: Description of the parameter
-    Dictionary of stations with lists of missing values
+    <param>: Dictionary of stations with lists of missing values
 Returns:
-    <variable>: Description of the return value
-    Returns name of first stations with all values
+    <variable>: Returns name of station with minimum missing vales and the number of missing values
 """
     thekeys = list(local_missing_dict.keys())
     minnumber=366
@@ -156,7 +148,23 @@ Returns:
             minstation = i
         if len(local_list)==0:
             minnumber=0
-            return i
+            minstation =i
+            return minstation, minnumber
     return minstation, minnumber
         
 
+def themainfunction():
+    """Description of the function/method.
+    Puts all the commands in this section together and 
+    saves a weather data frame as a csv. 
+Parameters:
+    <param>: Description of the parameter
+    None
+Returns:
+    <variable>: Description of the return value
+"""
+    mydf = read_short_list()
+    myweatherstations = create_weatherdata_dictionary(mydf)
+    mymissingdates = id_missing_data_dict(myweatherstations)
+    stationselect, num_dates_missing = check_for_complete_stations(mymissingdates)
+    write_df_to_csv(myweatherstations.get(stationselect), stationselect+".csv")
