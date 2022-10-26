@@ -10,12 +10,12 @@ Functions:
 Misc. variables:
     <variable>
 """
-from PIL import Image, ImageDraw
-
-import numpy as np
-import pandas as pd
 import datetime
 from collections import namedtuple
+from PIL import Image, ImageDraw
+import pandas as pd
+
+
 
 
 DayData = namedtuple("DayData","month,day")
@@ -116,17 +116,17 @@ Returns:
     days = COMMONDAYS.get(month_number)
     if len(weather_dict)==366 and month_number==2:
         days = days+1
-    for x in range(days):
-        x1=month_number*20
-        x2=x1+10
-        y1=30+x*10
-        y2=y1+10
-        hitemp=weather_dict.get(DayData(month_number,x+1)).hi
+    for i in range(days):
+        x_1=month_number*20
+        x_2=x_1+10
+        y_1=30+i*10
+        y_2=y_1+10
+        hitemp=weather_dict.get(DayData(month_number,i+1)).hi
         level = grade_temp(hitemp)
         if level is None:
             print("uh oh")
             level=1
-        drawobject.rectangle([x1,y1,x2,y2], fill=make_color(level),outline=1)
+        drawobject.rectangle([x_1,y_1,x_2,y_2], fill=make_color(level),outline=1)
 
 def the_main():
     """Description of the function/method.
@@ -138,10 +138,10 @@ Returns:
     <variable>: none
 """
     weather_dict = create_weather_dict(MYDATA)
-    im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
-    draw = ImageDraw.Draw(im)
+    local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
+    draw = ImageDraw.Draw(local_im)
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
-    for x in range(12):
-        add_month_to_image(weather_dict, draw, x+1)
-    im.show()
+    for i in range(12):
+        add_month_to_image(weather_dict, draw, i+1)
+    local_im.show()
