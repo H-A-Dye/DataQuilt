@@ -16,7 +16,7 @@ from collections import namedtuple
 import requests
 import pandas as pd
 import numpy as np
-
+# Temporary change
 
 LOCAL = Path.cwd()
 TEMPERATUREFILE = Path.cwd().joinpath('temperature.txt')
