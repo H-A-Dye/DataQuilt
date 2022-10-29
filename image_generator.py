@@ -12,6 +12,7 @@ Misc. variables:
 """
 import datetime
 from collections import namedtuple
+from typing import NamedTuple
 from PIL import Image, ImageDraw
 import pandas as pd
 
@@ -33,16 +34,16 @@ STEP = 256//15
 
 
 
-def extract_data(x_entry):
-    """Description of the function/method.
-    Extra TMIN and TMAX data from a row of the weather data frame
-Parameters:
-    <param>: Description of the parameter
-    Row from a weather data frame
-Returns:
-    <variable>: Description of the return value
-    an updated dictionary
-"""
+def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]: # TODO: check whether pd.Series is correct
+    """Extra TMIN and TMAX data from a row of the weather data frame
+
+    Parameters:
+        x_entry: a row of the weather data frame
+
+    Returns:
+        thedate: month and day for the weather data
+        thetemp: temperature of the weather data
+    """
     mydate = x_entry.DATE
     mydate = datetime.datetime.strptime(mydate, "%Y-%m-%d")
     mym = mydate.month
@@ -51,6 +52,7 @@ Returns:
     x_tmax = x_entry.TMAX
     thedate = DayData(mym,  myd)
     thetemp = TempData(x_tmin, x_tmax)
+
     return thedate, thetemp
 
 
