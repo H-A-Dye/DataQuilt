@@ -105,11 +105,11 @@ def create_weatherdata_dictionary(ws_inv: pd.DataFrame, theyear:str = "2021")->d
         local_dict.update({station_name:local_df})
     return local_dict
 
-def identify_missing_data(data_series: pd.Series)->list:
+def identify_missing_data(data_series)->list:  #TODO: objection to the data type?
     """Returns the indices of nan values in a pandas Data Series.
 
     Args:
-        data_series (pd.DataSeries): pd.DataSeries
+        data_series (pd.Series): pd.Series
     Returns:
         list: List of indices with nan values.
     """
