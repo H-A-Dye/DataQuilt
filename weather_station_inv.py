@@ -1,9 +1,25 @@
 """ This module selects weather stations that provide TMAX data for the requested year 
-from the inventory of GHCND stations. The selected stations are sorted by 
-distance and the top 10 are returned.
-References:
+    from the inventory of GHCND stations. The selected stations are sorted by 
+    distance and the top 10 are returned.
+    References:
     1: https://github.com/gojiplus/get-weather-data/blob/master/zip2ws/zip2ws.pyreference
     2: https://github.com/paulokuong/noaa
+
+    Functions:
+    load_weatherstation_inventory
+    sort_years_weatherstat
+    zip2latlong
+    convert_latlong
+    dist_betweenls
+    calculate_distances
+    attach_distances_to_inventory
+    sort_get_min_dist_weatherstat
+    the_main_function
+
+    Variables:
+    PATH
+    LOCALFILE
+    WEATHERSTATIONINVENTORY -
 """
 import pathlib
 from collections import namedtuple
@@ -23,14 +39,12 @@ WEATHERSTATIONINVENTORY = LOCALFILE
 Station = namedtuple("Station", {'name', 'lat', 'long', 'start', 'end'})
 
 
-def load_weatherstation_inventory():
-    """Description of the function/method.
-    This loads the gchnd inventory of weather stations into a list
-Parameters:
-    <param>: none, loads local file
-Returns:
-    <variable>: Returns a list of named tuples of weather stations
-"""
+def load_weatherstation_inventory()->list:
+    """Read the weather station inventory text file into a list.
+
+    Returns:
+        list: List of NOAA weather stations with name, latitude and longitude, year availability.
+    """    
     mywslist = []
     with open(LOCALFILE, encoding='utf8') as t_file:
         mydata = t_file.readlines()
@@ -52,27 +66,26 @@ Returns:
 
 
 
-def write_df_to_file(data_frame, name):
-    """Description of the function/method.
-        Helper function to save the data frame to a local file for reuse
-Parameters:
-    <param>: data frame and file name
+def write_df_to_file(data_frame: pd.DataFrame, name: str):
+    """ Write a pandas data frame to a file named "name"
 
-Returns:
-    <variable>: Writes the data frame to a csv file
-"""
+    Args:
+        data_frame (pd.DataFrame): Pandas data frame.
+        name (str): Name of file.
+    """
     data_frame.to_csv(name)
 
 
-def sort_years_weatherstat(data_frame,year=2021):
-    """Description of the function/method.
-    Filters the weather stations by year - returns only weather stations that are available for 
-    the given year
-Parameters:
-    <param>: Year 
-Returns:
-    <variable>: Weather Station Inventory data frame
-"""
+def sort_years_weatherstat(data_frame: pd.DataFrame, year:int =2021)->pd.DataFrame:
+    """Filters weather station inventory data frame based on year availability of the weather station.
+
+    Args:
+        data_frame (pd.DataFrame): Weather station inventory data frame.
+        year (int, optional): Year of interest for weather data. Defaults to 2021.
+
+    Returns:
+        pd.DataFrame: Filtered data frame
+    """
     data_frame['end']=data_frame['end'].astype('int')
     data_frame['start'] = data_frame['start'].astype('int')
     datefilter =data_frame['end'] >= year 
@@ -81,28 +94,30 @@ Returns:
     data_frame = data_frame[datefilter2]
     return data_frame
 
-def zip2latlong(zipcode):
-    """Description of the function/method.
-    Returns latitude and longitude based on the function
-Parameters:
-    <param>: US based zipcode
+def zip2latlong(zipcodestr: str)->tuple(float, float):
+    """Returns the latitude and longitude of a US zipcode
 
-Returns:
-    <variable>: latitude and longitude
-"""
+    Args:
+        zipcodestr (str): US zip code
+
+    Returns:
+        float, float: Latitude, Longitude
+    """
     mygeolocator = Nominatim(user_agent="my_app")
     country = 'USA'
-    location = mygeolocator.geocode(str(zipcode) + ',' + country)
+    location = mygeolocator.geocode(str(zipcodestr) + ',' + country)
     return location.latitude, location.longitude
 
 
-def convert_latlong(value):
-    """Description of the function/method.
-        Converts latitude or longitude measurement to radians
-    Parameters:
-    <param>: latitude or longitude float
+def convert_latlong(value: float)->float:
+    """Takes a latitude or longitude value and converts the decimal part
+    to radians.
 
-    Returns: <variable>: returns latitude or longitude in radians
+    Args:
+        value (): Latitude or Longitude.
+
+    Returns:
+        float: Converted value.
     """
     v2dec_part, v1int_part = math.modf(value)
     v2dec_part = v2dec_part * 100 / 60
@@ -111,19 +126,20 @@ def convert_latlong(value):
     return val
 
 
-def dist_between(lat1, long1, lat2, long2):
-    """Description of the function/method.
-    Computes the distance between two latitudes and longitudes
-    d=2*asin(sqrt((sin((lat1-lat2)/2))^2 +
-                      cos(lat1)*cos(lat2)*(sin((lon1-lon2)/2))^2))  from edwilliams.org
-     worked example: http://edwilliams.org/avform147.htm#Example
-    convert to radians    
-Parameters:
-    <param>: Two sets of latitude and longitude
+def dist_between(lat1: float, long1: float, lat2: float, long2: float)->float:
+    """Calculate the distance in nautical miles between two pairs of latitude 
+    and longitude
 
-Returns:
-    <variable>: Distance in nautical miles
-"""
+    Args:
+        lat1 (float): Latitude 1.
+        long1 (float): Longitude 1.
+        lat2 (float): Latitude 2.
+        long2 (float): Longitude 2.
+
+    Returns:
+        float: Distance in nautical miles.
+    """
+
     rho1 = convert_latlong(lat1)
     rho2 = convert_latlong(lat2)
     lam1 = convert_latlong(long1)
@@ -141,15 +157,18 @@ LAXLAT = 33.57
 LAXLONG = 118.24
 
 
-def calculate_distances(lat1, long1, data_frame):
-    """Description of the function/method.
-    Calculates the distance between the given latitude and longitude for all weather stations in 
-    the inventory.
-Parameters:
-    <param>: latitude and longitude (floats)
-Returns:
-    <variable>: Returns a list of distances
-"""
+def calculate_distances(lat1: float, long1: float, data_frame: pd.DataFrame)->list:
+    """Creates a list of distances based on the latitude and longitude to the
+    weather stations in the weather station inventory.
+
+    Args:
+        lat1 (float): Latitude
+        long1 (float): Longitude
+        data_frame (pd.DataFrame): Weather station inventory dataframe 
+
+    Returns:
+        list: List of distances to weather stations
+    """
     mydistances = []
     thelength = len(data_frame)
     for i in range(thelength):
@@ -161,49 +180,43 @@ Returns:
 
 
 
-def attach_distances_to_inventory(lat, long, data_frame):
-    """Description of the function/method.
-Given a latitude and longitude, it calls the function to compute the 
-list of distances between the given and each weather station. This is attached
-to the weather station inventory.
-Parameters:
-    <param>: Latitude and longitude of a location.
+def attach_distances_to_inventory(lat: float, long: float, data_frame: pd.DataFrame)->pd.DataFrame:
+    """Attach a column of distances to weather station inventory data frame.
 
-Returns:
-    <variable>: Distances attached to the weather station inventory.
-"""
+    Args:
+        lat (float): Latitude
+        long (float): Longitude
+        data_frame (pd.DataFrame): Weather station inventory data frame
+
+    Returns:
+        pd.DataFrame: Weather station inventory data frame with distance column
+    """    
     thedistances = calculate_distances(lat, long, data_frame)
     data_frame['distance'] = thedistances
     return data_frame
 
 
 
-def sort_get_min_dist_weatherstat(data_frame):
-    """Description of the function/method.
-    Sorts the weather station data frame by distance and returns 
-    the top 10 closest weather stations.
-Parameters:
-    <param>: none
+def sort_get_min_dist_weatherstat(data_frame: pd.DataFrame)->pd.DataFrame:
+    """Sorts the weather station inventory data frame by ascending distance. Then
+    returns 10 closest stations. 
 
-Returns:
-    <variable>:  Data frame of 10 weather stations
-"""
+    Args:
+        data_frame (pd.DataFrame): Weather station inventory with distance data frame.
+    Returns:
+        pd.DataFrame: Weather station inventory of length 10. 
+    """
     data_frame =data_frame.sort_values(by=['distance'])
     return data_frame[0:10]
     # find the nearest weather station by year
 
 
-def themainfunction(zipcodestr="62269"):
-    """Description of the function/method.
-    Gets the weather station inventory, sorts inventory by year,
-    adds distance data and returns the top 10 closest 
-    weather stations as a dataframe. 
-Parameters:
-    <param>: Description of the parameter
+def the_main_function(zipcodestr:str ="62269"):
+    """Runs all functions in this code. 
 
-Returns:
-    <variable>: Description of the return value
-"""
+    Args:
+        zipcodestr (str, optional): US based zip code as a string. Defaults to "62269".
+    """
     invlist = load_weatherstation_inventory()
     inv_df = pd.DataFrame(invlist) 
     inv_df = sort_years_weatherstat(inv_df)
