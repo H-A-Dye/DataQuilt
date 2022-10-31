@@ -1,18 +1,27 @@
-"""Description of the module.
-   This module takes a weather data frame and creates a diagram
-   of a temperature quilt.
-Classes:
-    <class>
+""" This module takes a weather data frame and creates a diagram
+    of a temperature quilt.
+    Classes:
+    None
 
-Functions:
-    <function>
+    Functions:
+    extract_data
+    create_weather_dict
+    grade_temp
+    make_color
+    add_month_to_image
+    the_main
 
-Misc. variables:
-    <variable>
-"""
+    Misc. variables:
+    THERANGE - range of maximum temperatures
+    THEMIN - minimum value for maximum temperatures
+    BIN SIZE
+    COMMONDAYS - number of days in each month in a common year
+    COLORBASE - RGB value
+    STEP - Step of RGB values
+    MYDATA - pandas data frame
+    """
 import datetime
 from collections import namedtuple
-from typing import NamedTuple
 from PIL import Image, ImageDraw
 import pandas as pd
 
@@ -34,16 +43,16 @@ STEP = 256//15
 
 
 
-def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]: # TODO: check whether pd.Series is correct
-    """Extra TMIN and TMAX data from a row of the weather data frame
+def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]: 
+    """ Extracts TMIN and TMAX values from a row of a data
+        frame and the date in month, day format.
 
-    Parameters:
-        x_entry: a row of the weather data frame
+    Args:
+        x_entry (pd.Series): Row from the weather data frame
 
     Returns:
-        thedate: month and day for the weather data
-        thetemp: temperature of the weather data
-    """
+        tuple[DayData, TempData]: [(month,day), (TMIN, TMAX)]
+    """    
     mydate = x_entry.DATE
     mydate = datetime.datetime.strptime(mydate, "%Y-%m-%d")
     mym = mydate.month
@@ -57,64 +66,64 @@ def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]: # TODO: check 
 
 
 
-def create_weather_dict(weather_data):
-    """Description of the function/method.
-    Takes a weather data frame and creates a weather dictionary 
-    with the data organized as needed for the diagram
-Parameters:
-    <param>: Weather Data Frame
+def create_weather_dict(weather_data: pd.DataFrame)->dict:
+    """Creates a dictionary from the pandas Data frame with DayData as
+    the key and TempData as the value
 
-Returns:
-    <variable>: Returns a weather dictionary
-"""
+    Args:
+        weather_data (pandas.DataFrame): weather data
+
+    Returns:
+        dict: DayData as keys, TempData as values
+    """  
     local_dict={}
     thelength = len(weather_data)
     for i in range(thelength):
-      day_info, temp_info = extract_data(weather_data.loc[i])
-      if local_dict.get(day_info) is None:
+        day_info, temp_info = extract_data(weather_data.loc[i])
+        if local_dict.get(day_info) is None:
             local_dict.update({day_info:temp_info})
     return local_dict
 
 
 
-def grade_temp(temperature: int):
-    """Description of the function/method.
-    Takes an integer temperature and grades it relative to
-    the bin size and min temperature
-Parameters:
-    <param>: temperature int
-Returns:
-    <variable>: level int
-"""
+def grade_temp(temperature: int)->int:
+    """ Takes a temperature value and returns a color level
+    integer.
+
+    Args:
+        temperature (int): temperature
+
+    Returns:
+        int: color level
+    """   
     temperature = temperature - THEMIN
     color = temperature // BIN_SIZE
     return color 
 
-def make_color(local_level: int):
-    """Description of the function/method.
-    Generates a RGB color based on integer. This should get replaced 
+def make_color(local_level: int)->tuple:
+    """Generates a RGB color based on integer. This should get replaced 
     with swatch.
-Parameters:
-    <param>: Level from 0 to 14
-Returns:
-    <variable>: Returns an RGB value
-"""
+
+    Args:
+        local_level (int): color level
+
+    Returns:
+        tuple: RGB value
+    """
     colorrgb = (0 + local_level*STEP,255 - local_level*10,256 - local_level*5)
     return colorrgb
 
 
 
 
-def add_month_to_image(weather_dict, drawobject, month_number=1):
-    """Description of the function/method.
-    Add each month of data to the diagram.
-Parameters:
-    <param>: weather_dictionary -
-             month to draw
-             diagram
-Returns:
-    <variable>: None
-"""
+def add_month_to_image(weather_dict: dict, drawobject: ImageDraw.ImageDraw, month_number:int=1):
+    """Adds a month of data to the quilt Image
+
+    Args:
+        weather_dict (dict): _description_
+        drawobject (PIL.ImageDraw.ImageDraw): _description_
+        month_number (int, optional): _description_. Defaults to 1.
+    """
     days = COMMONDAYS.get(month_number)
     if len(weather_dict)==366 and month_number==2:
         days = days+1
@@ -131,14 +140,9 @@ Returns:
         drawobject.rectangle([x_1,y_1,x_2,y_2], fill=make_color(level),outline=1)
 
 def the_main():
-    """Description of the function/method.
-    Create the diagram and show
-Parameters:
-    <param>: none
-
-Returns:
-    <variable>: none
-"""
+    """ Creates the weather dictionary and then uses add_month_to_image to 
+    draw an image of the quilt. 
+    """
     weather_dict = create_weather_dict(MYDATA)
     local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
     draw = ImageDraw.Draw(local_im)
