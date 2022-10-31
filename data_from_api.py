@@ -1,16 +1,27 @@
 """Description of the module.
     Using the list of 10 weather stations from SetUpWeather Stations, the goal is to download 365 days of weather data
- with T-MAX and T-MIN.  The list of 10 is Shortlist.csv.  The weather data is in 
- data USW00003960.csv
-Classes:
-    <class>
+     with T-MAX and T-MIN.  The list of 10 is Shortlist.csv.  The weather data is in 
+    data USW00003960.csv
 
-Functions:
-    <function>
-
-Misc. variables:
-    <variable>
-"""
+    Functions:
+    ----------
+    read_short_list()
+    write_df_to_csv()
+    get_temps_weatherstation()
+    create_weatherdata_dictionary()
+    identify_missing_data()
+    id_missing_data_dict()
+    check_for_complete_stations()
+    the_main_function()
+    Misc. variables:
+    ----------------
+    LOCAL
+    SHORTLIST
+    STATIONID - default
+    YEAR - default
+    MYTOKEN
+    HEAD
+    """
 from pathlib import Path
 from collections import namedtuple
 import requests
@@ -19,110 +30,104 @@ import numpy as np
 
 
 LOCAL = Path.cwd()
-TEMPERATUREFILE = Path.cwd().joinpath('temperature.txt')
 SHORTLIST = Path.cwd().joinpath('ShortList.csv')
-URLINVENTORY = "https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-inventory.txt"
-
-
 STATIONID ="USW00013802"
 YEAR="2021"
 MYTOKEN = ***REMOVED***
 
-head={"token": MYTOKEN}
+HEAD={"token": MYTOKEN}
 
 
 
 DayData=namedtuple('month', 'day')
 
 
-def read_short_list(file_name = SHORTLIST):
-    """Description of the function/method.
-            Reads the Shortlist.csv function created by the Get Weather Station module
-Parameters:
-    <param>: Reads data frame of weather stations
+def read_short_list(file_name:str = SHORTLIST)->pd.DataFrame:
+    """Reads list of 10 weather station and creates a data frame.
 
-Returns:
-    <variable>: returns a data frame
-"""
+    Args:
+        file_name (pathlib.WindowsPath, optional): file name. Defaults to SHORTLIST.
+
+    Returns:
+        pd.DataFrame: Weather Station inventory data frame.
+    """
     mydf=pd.read_csv(file_name)
     return mydf
 
 
-def write_df_to_csv(mydataframe, name):
-    """Description of the function/method.
-   Helper function to store weather data
-Parameters:
-    <param>: data frame and file name
+def write_df_to_csv(data_frame: pd.DataFrame, name: str):
+    """Writes data frame to a file named "name
 
-Returns:  
-    <variable>: 
-"""
-    mydataframe.to_csv(Path.cwd().joinpath(name))
+    Args:
+        mydataframe (pd.DataFrame): Data frame.
+        name (str): The name of file. 
+    """
+    data_frame.to_csv(Path.cwd().joinpath(name))
 
 
 
-def get_temps_weatherstation_revised(theyear = YEAR, station = STATIONID):
-    """Description of the function/method.
-    Given the year and station as strings, requests data from noaa.
-    https://www.ncei.noaa.gov/support/access-data-service-api-user-documentation
-    Temperature conversion: Divide your results by 10, multiply by 9/5 + 32 to convert to F (or whatever you need to do).
-Parameters:
-    <param>: Year and station id (strings)
+def get_temps_weatherstation(theyear:str = YEAR, station:str = STATIONID)->pd.DataFrame:
+    """Requests data for given year and weather station from NOAA
 
-Returns:
-    <variable>: Returns a data frame of dates and weather information.
-"""
+    Args:
+        theyear (str, optional): Year for the data. Defaults to YEAR.
+        station (str, optional): Weather station id. Defaults to STATIONID.
+
+    Returns:
+        pd.DataFrame: Weather data frame for the year with TMAX and TMIN
+    """
     myurllist=['https://www.ncei.noaa.gov/access/services/data/v1?dataset=daily-summaries&dataTypes=PRCP,SNOW,TMAX,TMIN&stations=',station,'&startDate=',theyear,'-01-01&endDate=',theyear,'-12-31&format=json']
     myurl = "".join(myurllist)
-    response = requests.get(myurl, headers=head).json()
+    response = requests.get(myurl, headers=HEAD).json()
     #response = response.get("results")
     mydf = pd.DataFrame(response)
     return mydf
 
 
 
-def create_weatherdata_dictionary(ws_list, theyear = "2021"):
-    """Description of the function/method.
-    Create a dictionary of  weather data frames from the short list of weather stations 
-    data frame
-Parameters:
-    <param>: Data frame of Weather Stations and year
+def create_weatherdata_dictionary(ws_inv: pd.DataFrame, theyear:str = "2021")->dict:
+    """Returns dictionary of weather station temperature data frames
+    with key values as the station.
 
-Returns:
-    <variable>: Dictionary of Weather Data Frames
-"""
+    Args:
+        ws_df (pd.DataFrame): Weather station inventory data frame
+        theyear (str, optional): Year for the weather data. Defaults to "2021".
+
+    Returns:
+        dict: A dictionary of weather station temperature data for a year with 
+        station id as the keys. 
+    """
     local_dict = {}
-    thelength = len(ws_list)
+    thelength = len(ws_inv)
     for i in range(thelength):
-        station_name = ws_list.name.iloc[i]
-        local_df = get_temps_weatherstation_revised(theyear, station_name)
+        station_name = ws_inv.name.iloc[i]
+        local_df = get_temps_weatherstation(theyear, station_name)
         local_dict.update({station_name:local_df})
     return local_dict
 
-def identify_missing_data(data_series):
-    """Description of the function/method.
-    Given a weather data series identify the missing data
-Parameters:
-    <param>: Description of the parameter
-    Weather Data Frame
-Returns:
-    <variable>: Description of the return value
-    List of missing values for temperature
-"""
+def identify_missing_data(data_series: pd.Series)->list:
+    """Returns the indices of nan values in a pandas Data Series.
+
+    Args:
+        data_series (pd.DataSeries): pd.DataSeries
+    Returns:
+        list: List of indices with nan values.
+    """
     local_array=np.where(data_series.isnull())
     local_list=local_array[0].tolist()
     return local_list
 
-def id_missing_data_dict(local_weather_dict):
-    """Description of the function/method.
-    Identify all the missing data in a weather data frame
-Parameters:
-    <param>: Description of the parameter
-    dictionary of weather data frames
-Returns:
-    <variable>: Description of the return value
-    dictionary of missing indices for each data frame
-"""
+def id_missing_data_dict(local_weather_dict: dict)->dict:
+    """Creates a dictionary of missing data for each weather station.
+
+    Args:
+        local_weather_dict (dict): Dictionary of weather stations (keys) and 
+        temperature data frames
+
+    Returns:
+        dict: Dictionary of weather stations (keys) and indices of missing temperature
+        data. 
+    """
     thekeys = list(local_weather_dict.keys())
     missing_dict = {}
     for i in thekeys:
@@ -131,14 +136,18 @@ Returns:
         missing_dict.update({i:local_list})
     return missing_dict
 
-def check_for_complete_stations(local_missing_dict):
-    """Description of the function/method.
-    Find the weather data frame with the fewest missing values
-Parameters:
-    <param>: Dictionary of stations with lists of missing values
-Returns:
-    <variable>: Returns name of station with minimum missing vales and the number of missing values
-"""
+def check_for_complete_stations(local_missing_dict: dict)->tuple[str, int]:
+    """Returns the station id with the least missing data and the number
+       of missing days. 
+
+    Args:
+        local_missing_dict (): Dictionary of station ids (keys) and list of
+        missing dates. 
+        
+    Returns:
+        str: station id
+        int: number of missing dates
+    """
     thekeys = list(local_missing_dict.keys())
     minnumber=366
     for i in thekeys:
@@ -153,18 +162,13 @@ Returns:
     return minstation, minnumber
         
 
-def themainfunction():
-    """Description of the function/method.
-    Puts all the commands in this section together and 
-    saves a weather data frame as a csv. 
-Parameters:
-    <param>: Description of the parameter
-    None
-Returns:
-    <variable>: Description of the return value
-"""
+def the_main_function():
+    """Shows how pieces work together.
+    """
     mydf = read_short_list()
     myweatherstations = create_weatherdata_dictionary(mydf)
     mymissingdates = id_missing_data_dict(myweatherstations)
     stationselect, num_dates_missing = check_for_complete_stations(mymissingdates)
+    if num_dates_missing>0:
+        raise ValueError("Missing Dates")
     write_df_to_csv(myweatherstations.get(stationselect), stationselect+".csv")
