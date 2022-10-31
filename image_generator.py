@@ -99,7 +99,7 @@ def grade_temp(temperature: int)->int:
     temperature = temperature - THEMIN
     color = temperature // BIN_SIZE
     return color 
-
+    
 def make_color(local_level: int)->tuple:
     """Generates a RGB color based on integer. This should get replaced 
     with swatch.
