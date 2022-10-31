@@ -1,0 +1,22 @@
+name: data_quilt
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - codecov
+  - pip
+  - requests
+  - pillow
+  - pandas 
+  - jupyter
+  - ipython
+  - pylint
+  - pytest
+  - geopy
+  - pip:
+      - matplotlib
+    
+variables:
+  TOKEN: ***REMOVED***
+
