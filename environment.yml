@@ -16,6 +16,7 @@ dependencies:
   - geopy
   - pip:
       - matplotlib
+      - swatch
     
 variables:
   TOKEN: ***REMOVED***
