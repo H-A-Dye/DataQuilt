@@ -22,3 +22,8 @@ def test_color_conversion_magenta():
                                         ([1,1,0,0],RGBColor(0,0,255))])
 def test_color_conversion_mass(cmyk, expected):
     assert color_conversion_rgb(cmyk)==expected
+
+
+@pytest.fixture
+def color_information():
+    return Color_Information("Lilac", RGBColor(255,0,255),14)
