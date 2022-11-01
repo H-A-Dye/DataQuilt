@@ -42,4 +42,4 @@ class Color_Information:
         return f"{self.name}({self.rgbinfo},{self.bin_no})"
     
     def __repr__(self):
-        pass 
+        return f"{type(self).__name__}('{self.name}','{self.rgbinfo}','{self.bin}')"
