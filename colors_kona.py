@@ -11,6 +11,7 @@ COLORLIST = {"Celestial": 233, "Turquoise": 1376, "Jamaica":491,
 MYKONA = swatch.parse("kona365.ase")
 DF_KONA = pd.json_normalize(MYKONA,record_path = ['swatches'])
 
+# TODO: DF_KONA[DF_KONA.name.str.contains("Cel")]
 
 def color_conversion_rgb(cmyk: list)->RGBColor:
     """Convert a CMYK color into RGB
