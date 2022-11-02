@@ -33,14 +33,19 @@ def color_conversion_rgb(cmyk: list)->RGBColor:
 
 
 class Color_Information:
-
+    """Color Information: Kona Color name, RGBColor, Bin_no for scaling
+    Returns:
+        _type_: _description_
+    """   
     def __init__(self, name: str, rgbinfo: RGBColor, bin_no: int):
         self.name = name
         self.rgbinfo = rgbinfo
         self.bin = bin_no
 
     def __str__(self):
-        return f"{self.name}({self.rgbinfo},{self.bin_no})"
+        return f"{self.name}({self.rgbinfo},{self.bin})"
     
     def __repr__(self):
         return f"{type(self).__name__}('{self.name}','{self.rgbinfo}','{self.bin}')"
+
+

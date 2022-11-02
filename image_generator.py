@@ -26,25 +26,35 @@ from PIL import Image, ImageDraw
 import pandas as pd
 
 
-
-
-DayData = namedtuple("DayData","month,day")
-TempData = namedtuple("TempData","lo,hi")
+DayData = namedtuple("DayData", "month,day")
+TempData = namedtuple("TempData", "lo,hi")
 
 MYDATA = pd.read_csv("dataUSW00003960.csv")
 
 
-THERANGE= max(MYDATA.TMAX) - min(MYDATA.TMAX)
+THERANGE = max(MYDATA.TMAX) - min(MYDATA.TMAX)
 THEMIN = min(MYDATA.TMAX)
-BIN_SIZE = THERANGE// 15
-COMMONDAYS ={1:31, 2:28, 3:31, 4:30, 5:31, 6:30, 7:31, 8:31, 9:30, 10:31, 11:30, 12:31  }
-COLORBASE=(0,0,256)
-STEP = 256//15
+BIN_SIZE = THERANGE // 15
+COMMONDAYS = {
+    1: 31,
+    2: 28,
+    3: 31,
+    4: 30,
+    5: 31,
+    6: 30,
+    7: 31,
+    8: 31,
+    9: 30,
+    10: 31,
+    11: 30,
+    12: 31,
+}
+COLORBASE = (0, 0, 256)
+STEP = 256 // 15
 
 
-
-def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]: 
-    """ Extracts TMIN and TMAX values from a row of a data
+def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]:
+    """Extracts TMIN and TMAX values from a row of a data
         frame and the date in month, day format.
 
     Args:
@@ -52,21 +62,20 @@ def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]:
 
     Returns:
         tuple[DayData, TempData]: [(month,day), (TMIN, TMAX)]
-    """    
+    """
     mydate = x_entry.DATE
     mydate = datetime.datetime.strptime(mydate, "%Y-%m-%d")
     mym = mydate.month
     myd = mydate.day
     x_tmin = x_entry.TMIN
     x_tmax = x_entry.TMAX
-    thedate = DayData(mym,  myd)
+    thedate = DayData(mym, myd)
     thetemp = TempData(x_tmin, x_tmax)
 
     return thedate, thetemp
 
 
-
-def create_weather_dict(weather_data: pd.DataFrame)->dict:
+def create_weather_dict(weather_data: pd.DataFrame) -> dict:
     """Creates a dictionary from the pandas Data frame with DayData as
     the key and TempData as the value
 
@@ -75,19 +84,18 @@ def create_weather_dict(weather_data: pd.DataFrame)->dict:
 
     Returns:
         dict: DayData as keys, TempData as values
-    """  
-    local_dict={}
+    """
+    local_dict = {}
     thelength = len(weather_data)
     for i in range(thelength):
         day_info, temp_info = extract_data(weather_data.loc[i])
         if local_dict.get(day_info) is None:
-            local_dict.update({day_info:temp_info})
+            local_dict.update({day_info: temp_info})
     return local_dict
 
 
-
-def grade_temp(temperature: int)->int:
-    """ Takes a temperature value and returns a color level
+def grade_temp(temperature: int) -> int:
+    """Takes a temperature value and returns a color level
     integer.
 
     Args:
@@ -95,13 +103,14 @@ def grade_temp(temperature: int)->int:
 
     Returns:
         int: color level
-    """   
+    """
     temperature = temperature - THEMIN
     color = temperature // BIN_SIZE
-    return color 
-    
-def make_color(local_level: int)->tuple:
-    """Generates a RGB color based on integer. This should get replaced 
+    return color
+
+
+def make_color(local_level: int) -> tuple:
+    """Generates a RGB color based on integer. This should get replaced
     with swatch.
 
     Args:
@@ -110,13 +119,13 @@ def make_color(local_level: int)->tuple:
     Returns:
         tuple: RGB value
     """
-    colorrgb = (0 + local_level*STEP,255 - local_level*10,256 - local_level*5)
+    colorrgb = (0 + local_level * STEP, 255 - local_level * 10, 256 - local_level * 5)
     return colorrgb
 
 
-
-
-def add_month_to_image(weather_dict: dict, drawobject: ImageDraw.ImageDraw, month_number:int=1):
+def add_month_to_image(
+    weather_dict: dict, drawobject: ImageDraw.ImageDraw, month_number: int = 1
+):
     """Adds a month of data to the quilt Image
 
     Args:
@@ -125,23 +134,24 @@ def add_month_to_image(weather_dict: dict, drawobject: ImageDraw.ImageDraw, mont
         month_number (int, optional): _description_. Defaults to 1.
     """
     days = COMMONDAYS.get(month_number)
-    if len(weather_dict)==366 and month_number==2:
-        days = days+1
+    if len(weather_dict) == 366 and month_number == 2:
+        days = days + 1
     for i in range(days):
-        x_1=month_number*20
-        x_2=x_1+10
-        y_1=30+i*10
-        y_2=y_1+10
-        hitemp=weather_dict.get(DayData(month_number,i+1)).hi
+        x_1 = month_number * 20
+        x_2 = x_1 + 10
+        y_1 = 30 + i * 10
+        y_2 = y_1 + 10
+        hitemp = weather_dict.get(DayData(month_number, i + 1)).hi
         level = grade_temp(hitemp)
         if level is None:
             print("uh oh")
-            level=1
-        drawobject.rectangle([x_1,y_1,x_2,y_2], fill=make_color(level),outline=1)
+            level = 1
+        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=make_color(level), outline=1)
+
 
 def the_main():
-    """ Creates the weather dictionary and then uses add_month_to_image to 
-    draw an image of the quilt. 
+    """Creates the weather dictionary and then uses add_month_to_image to
+    draw an image of the quilt.
     """
     weather_dict = create_weather_dict(MYDATA)
     local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
@@ -149,5 +159,9 @@ def the_main():
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
-        add_month_to_image(weather_dict, draw, i+1)
+        add_month_to_image(weather_dict, draw, i + 1)
     local_im.show()
+
+
+if __name__ == "__main__":
+    the_main()
