@@ -114,7 +114,9 @@ def create_weatherdata_dictionary(ws_inv: pd.DataFrame, theyear: str = "2021") -
     return local_dict
 
 
-def identify_missing_data(data_series) -> list:  # TODO: objection to the data type?
+def identify_missing_data(
+    data_series: pd.Series,
+) -> list:
     """Returns the indices of nan values in a pandas Data Series.
 
     Args:
