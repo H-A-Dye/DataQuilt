@@ -24,6 +24,7 @@ import datetime
 from collections import namedtuple
 from PIL import Image, ImageDraw
 import pandas as pd
+from colors_kona import make_color_kona, KONA_DICT
 
 
 DayData = namedtuple("DayData", "month,day")
@@ -34,7 +35,7 @@ MYDATA = pd.read_csv("dataUSW00003960.csv")
 
 THERANGE = max(MYDATA.TMAX) - min(MYDATA.TMAX)
 THEMIN = min(MYDATA.TMAX)
-BIN_SIZE = THERANGE // 15
+BIN_SIZE = THERANGE // 15 + 1
 COMMONDAYS = {
     1: 31,
     2: 28,
@@ -143,10 +144,13 @@ def add_month_to_image(
         y_2 = y_1 + 10
         hitemp = weather_dict.get(DayData(month_number, i + 1)).hi
         level = grade_temp(hitemp)
+        if level < 0 or level > 14:
+            raise KeyError(f"{level}")
+        color_tuple = make_color_kona(level)
         if level is None:
             print("uh oh")
             level = 1
-        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=make_color(level), outline=1)
+        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=color_tuple, outline=1)
 
 
 def the_main():

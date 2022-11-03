@@ -29,11 +29,11 @@ def test_color_conversion_mass(cmyk, expected):
 
 @pytest.fixture
 def color_information():
-    return Color_Information("Lilac", RGBColor(255, 0, 255), 14)
+    return ColorInformation("Lilac", RGBColor(255, 0, 255), 14)
 
 
 def test_color_information(color_information):
-    assert isinstance(color_information, Color_Information)
+    assert isinstance(color_information, ColorInformation)
 
 
 def test_string_rep(color_information):
