@@ -1,3 +1,6 @@
+    """ Creates a dictionary of Kona Cotton Colors and
+    Establishes a color_info class
+    """
 import swatch
 from collections import namedtuple
 import pandas as pd
@@ -42,7 +45,7 @@ COLORENNUMERATE = {
 MYKONA = swatch.parse("kona365.ase")
 DF_KONA = pd.json_normalize(MYKONA, record_path=["swatches"])
 
-# TODO: DF_KONA[DF_KONA.name.str.contains("Cel")]
+
 
 
 def color_conversion_rgb(cmyk: list) -> RGBColor:
@@ -58,13 +61,13 @@ def color_conversion_rgb(cmyk: list) -> RGBColor:
     M = float(cmyk[1])
     Y = float(cmyk[2])
     K = float(cmyk[3])
-    red = round(255 * (1 - C) * (1 - K), 0)
-    green = round(255 * (1 - M) * (1 - K), 0)
-    blue = round(255 * (1 - Y) * (1 - K), 0)
+    red = int( round(255 * (1 - C) * (1 - K), 0))
+    green = int( round(255 * (1 - M) * (1 - K), 0))
+    blue = int(round(255 * (1 - Y) * (1 - K), 0))
     return RGBColor(red, green, blue)
 
 
-class Color_Information:
+class ColorInformation:
     """Color Information: Kona Color name, RGBColor, Bin_no for scaling
     Returns:
         _type_: _description_
@@ -89,23 +92,30 @@ def make_kona_dictionary(colorlist: dict = COLORENNUMERATE) -> dict:
     Args:
         colorlist (dict, optional): Kona color list and keys. Defaults to COLORENNUMERATE.
     """
-    color_dict = dict()
-    for x in list(colorlist.keys()):
-        color_name = colorlist.get(x)
+    color_dict = {}
+    for i in list(colorlist.keys()):
+        color_name = colorlist.get(i)
         local_row = DF_KONA[DF_KONA.name.str.contains(color_name)]
         cmyk = local_row.iloc[0][3]
         rgb = color_conversion_rgb(cmyk)
-        kona_info = Color_Information(color_name, rgb, x)
-        color_dict.update({x: kona_info})
+        kona_info = ColorInformation(color_name, rgb, i)
+        color_dict.update({i: kona_info})
+    return color_dict
 
 
-def make_color_kona(level: int) -> RGBColor:
-    """_summary_
+KONA_DICT = make_kona_dictionary()
+
+
+def make_color_kona(level: int) -> tuple:
+    """Return a tuple from color level
 
     Args:
-        level (int): _description_
+        level (int): color elver
 
     Returns:
-        RGBColor: _description_
+        tuple: 3 tuple for Pillow
     """
-    pass
+    color_info = KONA_DICT.get(level)
+    rgb = color_info.rgbinfo
+    color_tuple = (rgb.R, rgb.G, rgb.B)
+    return color_tuple
