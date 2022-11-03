@@ -38,3 +38,6 @@ def test_color_information(color_information):
 
 def test_string_rep(color_information):
     assert str(color_information) == "Lilac(RGBColor(R=255, G=0, B=255),14)"
+
+
+my_dict = make_kona_dictionary()
