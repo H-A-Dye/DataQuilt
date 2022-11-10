@@ -28,14 +28,11 @@ from colors_kona import make_color_kona, KONA_DICT
 
 
 DayData = namedtuple("DayData", "month,day")
-TempData = namedtuple("TempData", "lo,hi")
+TempData = namedtuple("TempData", "low_temperature,high_temperature")
 
 MYDATA = pd.read_csv("dataUSW00003960.csv")
 
 
-THERANGE = max(MYDATA.TMAX) - min(MYDATA.TMAX)
-THEMIN = min(MYDATA.TMAX)
-BIN_SIZE = THERANGE // 15 + 1
 COMMONDAYS = {
     1: 31,
     2: 28,
@@ -95,7 +92,7 @@ def create_weather_dict(weather_data: pd.DataFrame) -> dict:
     return local_dict
 
 
-def grade_temp(temperature: int) -> int:
+def grade_temperture(temperature: int) -> int:
     """Takes a temperature value and returns a color level
     integer.
 
@@ -105,8 +102,13 @@ def grade_temp(temperature: int) -> int:
     Returns:
         int: color level
     """
-    temperature = temperature - THEMIN
-    color = temperature // BIN_SIZE
+    temperature_range_max = max(MYDATA.TMAX) - min(MYDATA.TMAX)
+    temperature_min = min(MYDATA.TMAX)
+    temperature_bin_size = temperature_range_max // 15 + 1
+    temperature = temperature - temperature_min
+    color = temperature // temperature_bin_size
+    if color > 14:
+        raise ValueError
     return color
 
 
@@ -142,8 +144,8 @@ def add_month_to_image(
         x_2 = x_1 + 10
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
-        hitemp = weather_dict.get(DayData(month_number, i + 1)).hi
-        level = grade_temp(hitemp)
+        high_temp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
+        level = grade_temperture(high_temp)
         if level < 0 or level > 14:
             raise KeyError(f"{level}")
         color_tuple = make_color_kona(level)

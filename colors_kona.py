@@ -1,4 +1,4 @@
-    """ Creates a dictionary of Kona Cotton Colors and
+""" Creates a dictionary of Kona Cotton Colors and
     Establishes a color_info class
     """
 import swatch
@@ -46,8 +46,6 @@ MYKONA = swatch.parse("kona365.ase")
 DF_KONA = pd.json_normalize(MYKONA, record_path=["swatches"])
 
 
-
-
 def color_conversion_rgb(cmyk: list) -> RGBColor:
     """Convert a CMYK color into RGB
 
@@ -61,16 +59,20 @@ def color_conversion_rgb(cmyk: list) -> RGBColor:
     M = float(cmyk[1])
     Y = float(cmyk[2])
     K = float(cmyk[3])
-    red = int( round(255 * (1 - C) * (1 - K), 0))
-    green = int( round(255 * (1 - M) * (1 - K), 0))
+    red = int(round(255 * (1 - C) * (1 - K), 0))
+    green = int(round(255 * (1 - M) * (1 - K), 0))
     blue = int(round(255 * (1 - Y) * (1 - K), 0))
     return RGBColor(red, green, blue)
 
 
 class ColorInformation:
-    """Color Information: Kona Color name, RGBColor, Bin_no for scaling
-    Returns:
-        _type_: _description_
+    """Color Information Class for quilt patterns with Kona color name, RGB code and pattern identifier
+
+    Attributes:
+        name (str): Kona cotton name
+        rgbinfo (RGBColor): RGB color for pattern draft
+        bin_no (int): Integer to apply to pattern piece.
+    Methods:
     """
 
     def __init__(self, name: str, rgbinfo: RGBColor, bin_no: int):
@@ -103,9 +105,6 @@ def make_kona_dictionary(colorlist: dict = COLORENNUMERATE) -> dict:
     return color_dict
 
 
-KONA_DICT = make_kona_dictionary()
-
-
 def make_color_kona(level: int) -> tuple:
     """Return a tuple from color level
 
@@ -115,6 +114,7 @@ def make_color_kona(level: int) -> tuple:
     Returns:
         tuple: 3 tuple for Pillow
     """
+    KONA_DICT = make_kona_dictionary()
     color_info = KONA_DICT.get(level)
     rgb = color_info.rgbinfo
     color_tuple = (rgb.R, rgb.G, rgb.B)
