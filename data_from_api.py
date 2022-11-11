@@ -31,7 +31,6 @@ import pandas as pd
 import numpy as np
 
 
-LOCAL = pathlib.Path().joinpath("data/ShortList.csv")
 STATIONID = "USW00013802"
 YEAR = "2021"
 SHORTLIST = "data/ShortList.csv"
@@ -174,4 +173,5 @@ def the_main_function():
     stationselect, num_dates_missing = check_for_complete_stations(mymissingdates)
     if num_dates_missing > 0:
         raise ValueError("Missing Dates")
-    myweatherstations.get(stationselect).to_csv("data/" + stationselect + ".csv")
+    weather_data_df = myweatherstations.get(stationselect)
+    weather_data_df.to_csv("data/" + stationselect + ".csv")
