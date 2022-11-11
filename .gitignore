@@ -5,6 +5,8 @@ __pycache__/
 
 # C extensions
 *.so
+# scratch
+scratch.txt
 
 # Distribution / packaging
 .Python
@@ -12,6 +14,7 @@ build/
 develop-eggs/
 dist/
 downloads/
+data/
 eggs/
 .eggs/
 lib/
