@@ -1,9 +1,10 @@
 import pytest
-from colors_kona import *
-
-
-row0 = DF_KONA.iloc[0]
-row1 = DF_KONA.iloc[1]
+from colors_kona import (
+    RGBColor,
+    color_conversion_rgb,
+    ColorInformation,
+    make_kona_dictionary,
+)
 
 
 def test_color_conversion():
@@ -44,7 +45,9 @@ def color_dictionary():
 def test_dictionary_type(color_dictionary):
     assert isinstance(color_dictionary, dict)
 
+
 def test_dictionary_entry(color_dictionary):
-    assert str(color_dictionary.get(1)=="ColorInformation('Turquoise','RGBColor(R=58, G=193, B=225)','1') ")
-
-
+    assert str(
+        color_dictionary.get(1)
+        == "ColorInformation('Turquoise','RGBColor(R=58, G=193, B=225)','1') "
+    )
