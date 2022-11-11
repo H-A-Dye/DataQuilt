@@ -14,8 +14,8 @@ def test_the_main_function():
     [
         (
             "2021",
-            "USW00013802",
-            pd.DataFrame(),  # TODO: fill in the expected data frame
+            "USW00003960",
+            pd.read_csv("USW00003960.csv"),  # TODO: fill in the expected data frame
         )
     ],
 )

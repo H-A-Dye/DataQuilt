@@ -1,4 +1,9 @@
-from weather_station_inv import the_main_function, load_weatherstation_inventory
+from weather_station_inv import (
+    the_main_function,
+    load_weatherstation_inventory,
+    zip2latlong,
+)
+
 from pytest import approx
 import pytest
 
