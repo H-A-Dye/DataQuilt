@@ -7,6 +7,7 @@ __pycache__/
 *.so
 # scratch
 scratch.txt
+temp.py
 
 # Distribution / packaging
 .Python
