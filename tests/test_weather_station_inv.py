@@ -24,4 +24,4 @@ def test_load_weatherstation_inventory():
 
 
 def test_zip2latlong():
-    assert zip2latlong("62269") == approx((38.59, -89.92))
+    assert zip2latlong("62269") == approx((38.59, -89.92), 0.01)
