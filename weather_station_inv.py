@@ -29,7 +29,7 @@ import pandas as pd
 from geopy.geocoders import Nominatim
 
 
-WEATHERSTATION_INV_LOCALFILE = pathlib.Path().joinpath("data/ghcnd-inventory.txt")
+WEATHERSTATION_INV_LOCALFILE = pathlib.Path("data/ghcnd-inventory.txt")
 Station = namedtuple("Station", {"name", "lat", "long", "start", "end"})
 
 

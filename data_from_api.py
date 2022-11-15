@@ -31,15 +31,15 @@ import pandas as pd
 import numpy as np
 
 
-STATIONID = "USW00013802"
+STATIONID = "USW00003960"
 YEAR = "2021"
-SHORTLIST = "data/ShortList.csv"
+SHORTLIST = "data/topten.csv"
 
 MYTOKEN = os.getenv("TOKEN")
 HEAD = {"token": MYTOKEN}
 
 
-DayData = namedtuple("month", "day")
+#DayData = namedtuple("month", "day")
 
 
 def read_short_list(file_name: str = SHORTLIST) -> pd.DataFrame:
@@ -175,3 +175,4 @@ def the_main_function():
         raise ValueError("Missing Dates")
     weather_data_df = myweatherstations.get(stationselect)
     weather_data_df.to_csv("data/" + stationselect + ".csv")
+    return weather_data_df

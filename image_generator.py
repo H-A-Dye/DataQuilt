@@ -12,15 +12,14 @@
     the_main
 
     Misc. variables:
-    THERANGE - range of maximum temperatures
-    THEMIN - minimum value for maximum temperatures
-    BIN SIZE
+    
     COMMONDAYS - number of days in each month in a common year
     COLORBASE - RGB value
     STEP - Step of RGB values
     MYDATA - pandas data frame
     """
 import datetime
+import pathlib
 from collections import namedtuple
 from PIL import Image, ImageDraw
 import pandas as pd
@@ -29,7 +28,7 @@ import pandas as pd
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
 
-MYDATA = pd.read_csv("dataUSW00003960.csv")
+MYDATA = pd.read_csv(pathlib.Path("data/USW00003960.csv"))
 
 
 COMMONDAYS = {
@@ -143,7 +142,7 @@ def add_month_to_image(
         x_2 = x_1 + 10
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
-        hitemp = weather_dict.get(DayData(month_number, i + 1)).hi
+        hitemp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
         level = grade_temp(hitemp)
         if level is None:
             print("uh oh")
