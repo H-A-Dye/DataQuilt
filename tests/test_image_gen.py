@@ -1,5 +1,5 @@
 import pytest
-from image_generator import (
+from dataquilt.image_generator import (
     MYDATA,
     DayData,
     TempData,

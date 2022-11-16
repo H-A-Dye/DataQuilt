@@ -1,4 +1,4 @@
-name: data_quilt
+name: dataquilt
 channels:
   - conda-forge
   - defaults
