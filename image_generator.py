@@ -21,9 +21,11 @@
 import datetime
 import pathlib
 from collections import namedtuple
-from PIL import Image, ImageDraw
-import pandas as pd
 
+import pandas as pd
+from PIL import Image, ImageDraw
+
+from colors_kona import KONA_DICT, make_color_kona
 
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
@@ -142,12 +144,15 @@ def add_month_to_image(
         x_2 = x_1 + 10
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
-        hitemp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
-        level = grade_temp(hitemp)
+        high_temp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
+        level = grade_temp(high_temp)
+        if level < 0 or level > 14:
+            raise KeyError(f"{level}")
+        color_tuple = make_color_kona(level)
         if level is None:
             print("uh oh")
             level = 1
-        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=make_color(level), outline=1)
+        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=color_tuple, outline=1)
 
 
 def the_main():
@@ -162,3 +167,7 @@ def the_main():
     for i in range(12):
         add_month_to_image(weather_dict, draw, i + 1)
     local_im.show()
+
+
+if __name__ == "__main__":
+    the_main()
