@@ -24,7 +24,6 @@ jobs:
           conda info
           conda list
           conda activate dataquilt
-          cd budgetools
           pip install -e .
       - name: Test with pytest
         run: |
