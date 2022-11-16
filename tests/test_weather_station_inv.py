@@ -1,4 +1,4 @@
-from weather_station_inv import (
+from dataquilt.weather_station_inv import (
     the_main_function,
     load_weatherstation_inventory,
     zip2latlong,

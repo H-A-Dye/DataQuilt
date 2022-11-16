@@ -1,4 +1,4 @@
-from data_from_api import the_main_function, get_temps_weatherstation
+from dataquilt.data_from_api import the_main_function, get_temps_weatherstation
 import pathlib
 import pytest
 import pandas as pd
