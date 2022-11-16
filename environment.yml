@@ -4,15 +4,16 @@ channels:
   - defaults
 dependencies:
   - python=3.10
+  - setuptools
   - codecov
   - pip
   - requests
   - pillow
-  - pandas 
+  - pandas
   - jupyter
   - ipython
   - pylint
-  - pytest
+  - pytest>=6.0
   - pytest-cov
   - geopy
   - pip:
