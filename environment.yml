@@ -16,6 +16,7 @@ dependencies:
   - pytest>=6.0
   - pytest-cov
   - geopy
+  - pre-commit
   - pip:
       - matplotlib
       - swatch
