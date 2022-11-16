@@ -12,25 +12,25 @@
     the_main
 
     Misc. variables:
-    THERANGE - range of maximum temperatures
-    THEMIN - minimum value for maximum temperatures
-    BIN SIZE
+    
     COMMONDAYS - number of days in each month in a common year
     COLORBASE - RGB value
     STEP - Step of RGB values
     MYDATA - pandas data frame
     """
 import datetime
+import pathlib
 from collections import namedtuple
-from PIL import Image, ImageDraw
-import pandas as pd
-from colors_kona import make_color_kona, KONA_DICT
 
+import pandas as pd
+from PIL import Image, ImageDraw
+
+from colors_kona import KONA_DICT, make_color_kona
 
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
 
-MYDATA = pd.read_csv("dataUSW00003960.csv")
+MYDATA = pd.read_csv(pathlib.Path("data/USW00003960.csv"))
 
 
 COMMONDAYS = {
@@ -92,7 +92,7 @@ def create_weather_dict(weather_data: pd.DataFrame) -> dict:
     return local_dict
 
 
-def grade_temperture(temperature: int) -> int:
+def grade_temp(temperature: int) -> int:
     """Takes a temperature value and returns a color level
     integer.
 
@@ -145,7 +145,7 @@ def add_month_to_image(
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
         high_temp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
-        level = grade_temperture(high_temp)
+        level = grade_temp(high_temp)
         if level < 0 or level > 14:
             raise KeyError(f"{level}")
         color_tuple = make_color_kona(level)

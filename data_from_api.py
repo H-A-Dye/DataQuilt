@@ -23,23 +23,23 @@ data USW00003960.csv
     MYTOKEN
     HEAD
     """
-from pathlib import Path
+import pathlib
+import os
 from collections import namedtuple
 import requests
 import pandas as pd
 import numpy as np
 
 
-LOCAL = Path.cwd()
-SHORTLIST = Path.cwd().joinpath("ShortList.csv")
-STATIONID = "USW00013802"
+STATIONID = "USW00003960"
 YEAR = "2021"
-MYTOKEN = ***REMOVED***
+SHORTLIST = "data/topten.csv"
 
+MYTOKEN = os.getenv("TOKEN")
 HEAD = {"token": MYTOKEN}
 
 
-DayData = namedtuple("month", "day")
+#DayData = namedtuple("month", "day")
 
 
 def read_short_list(file_name: str = SHORTLIST) -> pd.DataFrame:
@@ -53,16 +53,6 @@ def read_short_list(file_name: str = SHORTLIST) -> pd.DataFrame:
     """
     mydf = pd.read_csv(file_name)
     return mydf
-
-
-def write_df_to_csv(data_frame: pd.DataFrame, name: str):
-    """Writes data frame to a file named "name
-
-    Args:
-        mydataframe (pd.DataFrame): Data frame.
-        name (str): The name of file.
-    """
-    data_frame.to_csv(Path.cwd().joinpath(name))
 
 
 def get_temps_weatherstation(
@@ -183,4 +173,6 @@ def the_main_function():
     stationselect, num_dates_missing = check_for_complete_stations(mymissingdates)
     if num_dates_missing > 0:
         raise ValueError("Missing Dates")
-    write_df_to_csv(myweatherstations.get(stationselect), stationselect + ".csv")
+    weather_data_df = myweatherstations.get(stationselect)
+    weather_data_df.to_csv("data/" + stationselect + ".csv")
+    return weather_data_df
