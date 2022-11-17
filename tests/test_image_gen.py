@@ -1,4 +1,3 @@
-import pytest
 from dataquilt.image_generator import (
     MYDATA,
     DayData,

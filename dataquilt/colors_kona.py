@@ -66,7 +66,8 @@ def color_conversion_rgb(cmyk: list) -> RGBColor:
 
 
 class ColorInformation:
-    """Color Information Class for quilt patterns with Kona color name, RGB code and pattern identifier
+    """Color Information Class for quilt patterns with Kona color name,
+    RGB code and pattern identifier
 
     Attributes:
         name (str): Kona cotton name
@@ -84,7 +85,8 @@ class ColorInformation:
         return f"{self.name}({self.rgbinfo},{self.bin})"
 
     def __repr__(self):
-        return f"{type(self).__name__}('{self.name}','{self.rgbinfo}','{self.bin}')"
+        type_self = type(self).__name__
+        return f"{type_self}('{self.name}','{self.rgbinfo}','{self.bin}')"
 
 
 def make_kona_dictionary(colorlist: dict = COLORENNUMERATE) -> dict:
@@ -92,7 +94,8 @@ def make_kona_dictionary(colorlist: dict = COLORENNUMERATE) -> dict:
     dictionary with number key and Color_Information for Pillow.
 
     Args:
-        colorlist (dict, optional): Kona color list and keys. Defaults to COLORENNUMERATE.
+        colorlist (dict, optional): Kona color list and keys.
+        Defaults to COLORENNUMERATE.
     """
     color_dict = {}
     for i in list(colorlist.keys()):

@@ -5,10 +5,6 @@ from dataquilt.weather_station_inv import (
 )
 
 from pytest import approx
-import pytest
-
-import pandas as pd
-import pandas._testing as pdt
 
 
 def test_the_main_function():

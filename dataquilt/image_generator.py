@@ -12,7 +12,6 @@
     the_main
 
     Misc. variables:
-    
     COMMONDAYS - number of days in each month in a common year
     COLORBASE - RGB value
     STEP - Step of RGB values
@@ -25,7 +24,7 @@ from collections import namedtuple
 import pandas as pd
 from PIL import Image, ImageDraw
 
-from colors_kona import KONA_DICT, make_color_kona
+from colors_kona import make_color_kona
 
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
@@ -122,7 +121,10 @@ def make_color(local_level: int) -> tuple:
     Returns:
         tuple: RGB value
     """
-    colorrgb = (0 + local_level * STEP, 255 - local_level * 10, 256 - local_level * 5)
+    color_r = 0 + local_level * STEP
+    color_g = 255 - local_level * 10
+    color_b = 256 - local_level * 5
+    colorrgb = (color_r, color_g, color_b)
     return colorrgb
 
 
@@ -144,7 +146,8 @@ def add_month_to_image(
         x_2 = x_1 + 10
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
-        high_temp = weather_dict.get(DayData(month_number, i + 1)).high_temperature
+        dict_entry = weather_dict.get(DayData(month_number, i + 1))
+        high_temp = dict_entry.high_temperature
         level = grade_temp(high_temp)
         if level < 0 or level > 14:
             raise KeyError(f"{level}")
