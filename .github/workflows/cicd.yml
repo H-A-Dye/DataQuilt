@@ -12,15 +12,16 @@ jobs:
         shell: bash -l {0}
 
     steps:
-      - uses: actions/checkout@v3
+     # - uses: actions/checkout@v3
      # - uses: conda-incubator/setup-miniconda@v3
-        uses: actions/setup-python@v3
-      with:
-        python-version: 3.10
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+     #   uses: actions/setup-python@v3
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+
+
+      - name: Setup Miniconda
+        - uses: conda-incubator/setup-miniconda@v2.2.0
+
     - name: Install dependencies
 
         with:
