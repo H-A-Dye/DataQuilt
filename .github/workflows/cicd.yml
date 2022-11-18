@@ -3,10 +3,14 @@ name: Python Package using Conda
 on: [push, pull_request]
 
 jobs:
-  build-linux:
+  default-shell:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    
+    
 
     steps:
     - uses: actions/checkout@v3
