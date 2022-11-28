@@ -18,11 +18,15 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: 3.9
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install dependencies
+        architecture: "x64"
+    - name: setup-conda
+     uses: s-weigand/setup-conda@v1
+    - run: conda --version
+    - run: which python
+    - run: conda update conda
+    - run: conda env list
+    - run: conda env update --file environment.yml --name base
+    
       run: |
         conda env update --file environment.yml --name base
     - name: Lint with flake8
