@@ -10,8 +10,6 @@ dependencies:
   - requests
   - pillow
   - pandas
-  - jupyter
-  - ipython
   - pylint
   - pytest>=6.0
   - pytest-cov
