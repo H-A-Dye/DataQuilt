@@ -24,7 +24,7 @@ from collections import namedtuple
 import pandas as pd
 from PIL import Image, ImageDraw
 
-from colors_kona import make_color_kona
+from dataquilt.colors_kona import make_color_kona
 
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
