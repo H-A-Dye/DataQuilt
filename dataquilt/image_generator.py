@@ -18,18 +18,20 @@
     MYDATA - pandas data frame
     """
 import datetime
-import pathlib
 from collections import namedtuple
 
 import pandas as pd
 from PIL import Image, ImageDraw
 
 from dataquilt.colors_kona import make_color_kona
+from dataquilt import DATA_PATH
+
 
 DayData = namedtuple("DayData", "month,day")
 TempData = namedtuple("TempData", "low_temperature,high_temperature")
 
-MYDATA = pd.read_csv(pathlib.Path("data/USW00003960.csv"))
+
+MYDATA = pd.read_csv(DATA_PATH / "USW00003960.csv")
 
 
 COMMONDAYS = {

@@ -29,10 +29,12 @@ import requests
 import pandas as pd
 import numpy as np
 
+from dataquilt import DATA_PATH
+
 
 STATIONID = "USW00003960"
 YEAR = "2021"
-SHORTLIST = "data/topten.csv"
+SHORTLIST = DATA_PATH / "topten.csv"
 
 MYTOKEN = os.getenv("TOKEN")
 HEAD = {"token": MYTOKEN}
@@ -184,5 +186,5 @@ def the_main_function():
     if num_dates_missing > 0:
         raise ValueError("Missing Dates")
     weather_data_df = myweatherstations.get(stationselect)
-    weather_data_df.to_csv("data/" + stationselect + ".csv")
+    weather_data_df.to_csv(DATA_PATH + stationselect + ".csv")
     return weather_data_df
