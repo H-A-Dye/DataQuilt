@@ -28,9 +28,10 @@ from urllib.request import urlretrieve
 import math
 import pandas as pd
 from geopy.geocoders import Nominatim
+from dataquilt import DATA_PATH
 
 
-WEATHERSTATION_INV_LOCALFILE = pathlib.Path("data/ghcnd-inventory.txt")
+WEATHERSTATION_INV_LOCALFILE = pathlib.Path(DATA_PATH / "ghcnd-inventory.txt")
 Station = namedtuple("Station", {"name", "lat", "long", "start", "end"})
 
 
@@ -239,4 +240,4 @@ def the_main_function(zipcodestr: str = "62269"):
     loc_lat, loc_long = zip2latlong(zipcodestr)
     inv_df = attach_distances_to_inventory(loc_lat, loc_long, inv_df)
     shortlist = sort_get_min_dist_weatherstat(inv_df)
-    shortlist.to_csv("data/topten.csv")
+    shortlist.to_csv(DATA_PATH / "topten.csv")

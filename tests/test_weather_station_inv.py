@@ -3,15 +3,22 @@ from dataquilt.weather_station_inv import (
     load_weatherstation_inventory,
     zip2latlong,
 )
+import pytest
 
 from pytest import approx
 
 
+@pytest.mark.skip(
+    "Data files need to be added"
+)  # https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_the_main_function():
 
     the_main_function()
 
 
+@pytest.mark.skip(
+    "Data files need to be added"
+)  # https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_load_weatherstation_inventory():
 
     my_list = load_weatherstation_inventory()
