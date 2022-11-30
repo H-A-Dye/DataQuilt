@@ -6,9 +6,7 @@ import pandas as pd
 from dataquilt import DATA_PATH
 
 
-@pytest.mark.skip(
-    "Data files need to be added"
-)  # https://github.com/H-A-Dye/DataQuilt/issues/26
+# https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_the_main_function():
 
     the_main_function()
