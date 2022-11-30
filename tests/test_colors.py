@@ -1,7 +1,11 @@
 import pytest
 
-from colors_kona import (ColorInformation, RGBColor, color_conversion_rgb,
-                         make_kona_dictionary)
+from dataquilt.colors_kona import (
+    ColorInformation,
+    RGBColor,
+    color_conversion_rgb,
+    make_kona_dictionary,
+)
 
 
 def test_color_conversion():
@@ -43,6 +47,11 @@ def test_dictionary_type(color_dictionary):
     assert isinstance(color_dictionary, dict)
 
 
+@pytest.mark.skip(
+    "Data files need to be added"
+)  # https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_dictionary_entry(color_dictionary):
-    assert color_dictionary.get(1) == "ColorInformation('Turquoise','RGBColor(R=58, G=193, B=225)','1') "
-    
+    assert (
+        color_dictionary.get(1)
+        == "ColorInformation('Turquoise','RGBColor(R=58, G=193, B=225)','1') "
+    )

@@ -1,20 +1,20 @@
-name: data_quilt
+name: dataquilt
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.10
+  - python=3.9
+  - setuptools
   - codecov
   - pip
   - requests
   - pillow
-  - pandas 
-  - jupyter
-  - ipython
+  - pandas
   - pylint
-  - pytest
+  - pytest>=6.0
   - pytest-cov
   - geopy
+  - pre-commit
   - pip:
       - matplotlib
       - swatch

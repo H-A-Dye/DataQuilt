@@ -1,8 +1,9 @@
-""" This module selects weather stations that provide TMAX data for the requested year 
-    from the inventory of GHCND stations. The selected stations are sorted by 
-    distance and the top 10 are returned.
+""" This module selects weather stations that provide TMAX data for the
+    requested year from the inventory of GHCND stations. The selected
+    stations are sorted by distance and the top 10 are returned.
     References:
-    1: https://github.com/gojiplus/get-weather-data/blob/master/zip2ws/zip2ws.pyreference
+    1: https://github.com/gojiplus/get-weather-data/blob/
+        master/zip2ws/zip2ws.pyreference
     2: https://github.com/paulokuong/noaa
 
     Functions:
@@ -27,9 +28,10 @@ from urllib.request import urlretrieve
 import math
 import pandas as pd
 from geopy.geocoders import Nominatim
+from dataquilt import DATA_PATH
 
 
-WEATHERSTATION_INV_LOCALFILE = pathlib.Path("data/ghcnd-inventory.txt")
+WEATHERSTATION_INV_LOCALFILE = pathlib.Path(DATA_PATH / "ghcnd-inventory.txt")
 Station = namedtuple("Station", {"name", "lat", "long", "start", "end"})
 
 
@@ -50,7 +52,8 @@ def load_weatherstation_inventory() -> list:
     """Read the weather station inventory text file into a list.
 
     Returns:
-        list: List of NOAA weather stations with name, latitude and longitude, year availability.
+        list: List of NOAA weather stations with name, latitude and longitude,
+        year availability.
     """
     mywslist = []
     with open(WEATHERSTATION_INV_LOCALFILE, encoding="utf8") as t_file:
@@ -78,12 +81,17 @@ def load_weatherstation_inventory() -> list:
     return mywslist
 
 
-def sort_years_weatherstat(data_frame: pd.DataFrame, year: int = 2021) -> pd.DataFrame:
-    """Filters weather station inventory data frame based on year availability of the weather station.
+def sort_years_weatherstat(
+    data_frame: pd.DataFrame,
+    year: int = 2021,
+) -> pd.DataFrame:
+    """Filters weather station inventory data frame based on year availability
+    of the weather station.
 
     Args:
         data_frame (pd.DataFrame): Weather station inventory data frame.
-        year (int, optional): Year of interest for weather data. Defaults to 2021.
+        year (int, optional): Year of interest for weather data.
+        Defaults to 2021.
 
     Returns:
         pd.DataFrame: Filtered data frame
@@ -129,7 +137,12 @@ def convert_latlong(value: float) -> float:
     return val
 
 
-def dist_between(lat1: float, long1: float, lat2: float, long2: float) -> float:
+def dist_between(
+    lat1: float,
+    long1: float,
+    lat2: float,
+    long2: float,
+) -> float:
     """Calculate the distance in nautical miles between two pairs of latitude
     and longitude
 
@@ -147,17 +160,20 @@ def dist_between(lat1: float, long1: float, lat2: float, long2: float) -> float:
     rho2 = convert_latlong(lat2)
     lam1 = convert_latlong(long1)
     lam2 = convert_latlong(long2)
-    dist = 2 * math.asin(
-        math.sqrt(
-            (math.sin((rho1 - rho2) / 2)) ** 2
-            + math.cos(rho1) * math.cos(rho2) * (math.sin((lam1 - lam2) / 2)) ** 2
-        )
-    )
+    part1 = (math.sin((rho1 - rho2) / 2)) ** 2
+    part2a = math.cos(rho1) * math.cos(rho2)
+    part2b = (math.sin((lam1 - lam2) / 2)) ** 2
+    part2 = part2a * part2b
+    dist = 2 * math.asin(math.sqrt(part1 + part2))
     dist = dist * 180 * 60 / math.pi
     return dist
 
 
-def calculate_distances(lat1: float, long1: float, data_frame: pd.DataFrame) -> list:
+def calculate_distances(
+    lat1: float,
+    long1: float,
+    data_frame: pd.DataFrame,
+) -> list:
     """Creates a list of distances based on the latitude and longitude to the
     weather stations in the weather station inventory.
 
@@ -197,11 +213,12 @@ def attach_distances_to_inventory(
 
 
 def sort_get_min_dist_weatherstat(data_frame: pd.DataFrame) -> pd.DataFrame:
-    """Sorts the weather station inventory data frame by ascending distance. Then
-    returns 10 closest stations.
+    """Sorts the weather station inventory data frame by ascending distance.
+    Then returns 10 closest stations.
 
     Args:
-        data_frame (pd.DataFrame): Weather station inventory with distance data frame.
+        data_frame (pd.DataFrame): Weather station inventory with distance data
+        frame.
     Returns:
         pd.DataFrame: Weather station inventory of length 10.
     """
@@ -214,7 +231,8 @@ def the_main_function(zipcodestr: str = "62269"):
     """Runs all functions in this code.
 
     Args:
-        zipcodestr (str, optional): US based zip code as a string. Defaults to "62269".
+        zipcodestr (str, optional): US based zip code as a string.
+        Defaults to "62269".
     """
     invlist = load_weatherstation_inventory()
     inv_df = pd.DataFrame(invlist)
@@ -222,4 +240,4 @@ def the_main_function(zipcodestr: str = "62269"):
     loc_lat, loc_long = zip2latlong(zipcodestr)
     inv_df = attach_distances_to_inventory(loc_lat, loc_long, inv_df)
     shortlist = sort_get_min_dist_weatherstat(inv_df)
-    shortlist.to_csv("data/topten.csv")
+    shortlist.to_csv(DATA_PATH / "topten.csv")
