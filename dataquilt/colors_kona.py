@@ -4,6 +4,7 @@
 import swatch
 from collections import namedtuple
 import pandas as pd
+from dataquilt import DATA_PATH
 
 RGBColor = namedtuple("RGBColor", ["R", "G", "B"])
 
@@ -42,7 +43,7 @@ COLORENNUMERATE = {
     14: "Berry",
 }
 
-MYKONA = swatch.parse("kona365.ase")
+MYKONA = swatch.parse(DATA_PATH / "kona365.ase")
 DF_KONA = pd.json_normalize(MYKONA, record_path=["swatches"])
 
 

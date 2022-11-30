@@ -186,5 +186,5 @@ def the_main_function():
     if num_dates_missing > 0:
         raise ValueError("Missing Dates")
     weather_data_df = myweatherstations.get(stationselect)
-    weather_data_df.to_csv(DATA_PATH + stationselect + ".csv")
+    weather_data_df.to_csv(DATA_PATH / "station.csv")
     return weather_data_df
