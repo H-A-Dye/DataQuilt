@@ -8,7 +8,6 @@ from dataquilt.image_generator import (
 )
 
 
-# https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_main_function():
 
     the_main()
