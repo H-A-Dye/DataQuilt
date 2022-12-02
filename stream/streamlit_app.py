@@ -1,6 +1,8 @@
 import streamlit as st
+import pandas as pd
 
-# from . import weather_station_inv
+import dataquilt.weather_station_inv as dw
+
 
 st.set_page_config(
     page_title="Temperature Quilt",
@@ -11,8 +13,7 @@ st.set_page_config(
 
 st.title("Temperature Quilt")
 st.markdown(
-    """##### <span style="color:gray">
-    Construct a temperature quilt for a US zip code</span>
+    """##### Construct a temperature quilt for a US zip code
             """,
     unsafe_allow_html=True,
 )
@@ -29,4 +30,15 @@ st.sidebar.markdown(" ## Temperature Quilts")
 st.sidebar.markdown("This makes a visual model of a year of temperatures")
 st.sidebar.info("Read more about quilting", icon="ℹ️")
 
-zip_code = st.text_input("Enter a US zipcode", value="60660", max_chars=5)
+zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
+invlist = dw.load_weatherstation_inventory()
+inv_df = pd.DataFrame(invlist)
+inv_df = dw.sort_years_weatherstat(inv_df)
+try:
+    loc_lat, loc_long = dw.zip2latlong(zip_code)
+except ValueError:
+    st.write("Not a valid zip code")
+
+
+inv_df = dw.attach_distances_to_inventory(loc_lat, loc_long, inv_df)
+shortlist = dw.sort_get_min_dist_weatherstat(inv_df)
