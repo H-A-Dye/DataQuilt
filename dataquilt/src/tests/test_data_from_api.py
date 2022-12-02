@@ -3,7 +3,7 @@ import pytest
 import pandas as pd
 
 # import pandas._testing as pdt
-from dataquilt import DATA_PATH
+from tests import DATA_PATH
 
 
 # https://github.com/H-A-Dye/DataQuilt/issues/26
