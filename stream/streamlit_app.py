@@ -1,13 +1,19 @@
 import streamlit as st
 import pandas as pd
+from collections import namedtuple
 
-# from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw
 
 import dataquilt.weather_station_inv as dw
 import dataquilt.data_from_api as da
 import dataquilt.image_generator as ig
 
-# python -m pip install .\dataquilt
+# python -m pip install -e .\dataquilt
+
+
+DayData = namedtuple("DayData", "month,day")
+TempData = namedtuple("TempData", "low_temperature,high_temperature")
+
 
 st.set_page_config(
     page_title="Temperature Quilt",
@@ -67,4 +73,12 @@ st.dataframe(data=weather_data_df)
 weather_dict = ig.create_weather_dict(weather_data_df)
 
 
-the_level = ig.grade_temp(weather_data_df, 7)
+local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
+draw = ImageDraw.Draw(local_im)
+draw.line([0, 30, 270, 30], fill=1, width=1)
+draw.line([0, 340, 270, 340], fill=1, width=1)
+for i in range(12):
+    ig.add_month_to_image(weather_data_df, weather_dict, draw, i + 1)
+
+
+st.image(local_im)

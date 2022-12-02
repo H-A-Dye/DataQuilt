@@ -157,7 +157,7 @@ def add_month_to_image(
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
         dict_entry = weather_dict.get(DayData(month_number, i + 1))
-        high_temp = dict_entry.high_temperature
+        high_temp = int(dict_entry.high_temperature)
         level = grade_temp(weather_data, high_temp)
         if level < 0 or level > 14:
             raise KeyError(f"{level}")
@@ -178,7 +178,7 @@ def the_main():
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
-        add_month_to_image(weather_dict, draw, i + 1)
+        add_month_to_image(weather_dict, weather_dict, draw, i + 1)
     local_im.show()
 
 
