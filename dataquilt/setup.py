@@ -7,7 +7,13 @@ setup(
     based on weather data.""",
     name="dataquilt",
     version="0.0.1",
-    packages=find_packages(where="src", include=["dataquilt", "data"]),
+    packages=find_packages(
+        where="src",
+        include=["dataquilt", "data"],
+        exclude=[
+            "tests",
+        ],
+    ),
     package_dir={"": "src"},
     package_data={"data": ["*.txt", "*.csv", ".ase"]},
     # version="0.1.0",
