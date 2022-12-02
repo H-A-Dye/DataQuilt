@@ -9,6 +9,8 @@ __pycache__/
 # scratch
 scratch.txt
 temp.py
+# Tokens
+constants.py
 
 # Distribution / packaging
 .Python
