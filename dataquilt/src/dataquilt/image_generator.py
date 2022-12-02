@@ -178,7 +178,7 @@ def the_main():
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
-        add_month_to_image(weather_dict, weather_dict, draw, i + 1)
+        add_month_to_image(MYDATA, weather_dict, draw, i + 1)
     local_im.show()
 
 
