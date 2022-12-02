@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
 
-import dataquilt.weather_station_inv as dw
+# from PIL import Image, ImageDraw
 
+import dataquilt.weather_station_inv as dw
+import dataquilt.data_from_api as da
+import dataquilt.image_generator as ig
+
+# python -m pip install .\dataquilt
 
 st.set_page_config(
     page_title="Temperature Quilt",
@@ -42,3 +47,24 @@ except ValueError:
 
 inv_df = dw.attach_distances_to_inventory(loc_lat, loc_long, inv_df)
 shortlist = dw.sort_get_min_dist_weatherstat(inv_df)
+
+st.write("Top Ten Nearest Weather Stations")
+st.dataframe(data=shortlist)
+
+myweatherstations = da.create_weatherdata_dictionary(shortlist)
+missingdates = da.id_missing_data_dict(myweatherstations)
+output = da.check_for_complete_stations(missingdates)
+
+st.write(output)
+stationselect, num_dates_missing = output
+
+if num_dates_missing > 0:
+    raise ValueError("Missing Dates")
+weather_data_df = myweatherstations.get(stationselect)
+
+st.dataframe(data=weather_data_df)
+
+weather_dict = ig.create_weather_dict(weather_data_df)
+
+
+the_level = ig.grade_temp(weather_data_df, 7)
