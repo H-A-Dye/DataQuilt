@@ -56,6 +56,7 @@ def load_weatherstation_inventory() -> list:
         year availability.
     """
     mywslist = []
+    weather_station_inv_retrieve()
     with open(WEATHERSTATION_INV_LOCALFILE, encoding="utf8") as t_file:
         mydata = t_file.readlines()
     for xline in mydata:

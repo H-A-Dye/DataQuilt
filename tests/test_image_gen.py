@@ -6,12 +6,8 @@ from dataquilt.image_generator import (
     extract_data,
     create_weather_dict,
 )
-import pytest
 
 
-@pytest.mark.skip(
-    "Data files need to be added"
-)  # https://github.com/H-A-Dye/DataQuilt/issues/26
 def test_main_function():
 
     the_main()
