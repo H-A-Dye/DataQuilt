@@ -1,0 +1,11 @@
+pandas
+numpy
+setuptools
+black
+pytest
+requests
+pillow
+matplotlib
+swatch
+geopy
+streamlit      
