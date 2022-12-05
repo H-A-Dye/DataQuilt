@@ -10,5 +10,12 @@ pattern by day.
 
 1. Install the conda environment
 2. Add an API token for NOAA
-3. Install the dataquilt package using: python -m pip install -e .\dataquilt
-4. Run the streamlit app using: streamlit run \stream\stream_app.py
+3. Install the dataquilt package using:
+```python 
+python -m pip install -e .\dataquilt
+```
+
+4. Run the streamlit app using: 
+``` python
+streamlit run \stream\stream_app.py
+```
