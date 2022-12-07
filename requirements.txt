@@ -11,5 +11,4 @@ geopy
 streamlit      
 codecov
 pylint
-pytest-cov
 pre-commit
