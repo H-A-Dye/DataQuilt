@@ -12,4 +12,4 @@ streamlit
 codecov
 pylint
 pre-commit
-git+https://github.com/H-A-Dye/DataQuilt.git@8d5c0c912c8487272190979962466ed415935c82#egg=dataquilt&subdirectory=dataquilt
+- e https://github.com/H-A-Dye/DataQuilt/tree/9-implement-and-deploy-dataquilt-streamlit-app/dataquilt
