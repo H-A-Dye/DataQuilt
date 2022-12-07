@@ -20,7 +20,7 @@ jobs:
     - run: conda update conda
     - run: conda env list
     - run: conda env update --file env.yml --name base 
-    - run: conda activate base
+    - run: source activate base
 
     - name: Lint with flake8
       run: |
