@@ -12,4 +12,4 @@ streamlit
 codecov
 pylint
 pre-commit
-dataquilt
+-e ./dataquilt
