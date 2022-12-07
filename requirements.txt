@@ -12,4 +12,4 @@ streamlit
 codecov
 pylint
 pre-commit
-dataquilt --extra-index-url  = https://github.com/H-A-Dye/DataQuilt/tree/9-implement-and-deploy-dataquilt-streamlit-app/dataquilt
+-e .
