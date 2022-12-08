@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from collections import namedtuple
 
-from PIL import Image, ImageDraw
 
 import dataquilt.weather_station_inv as dw
 import dataquilt.data_from_api as da
@@ -70,15 +69,16 @@ weather_data_df = myweatherstations.get(stationselect)
 
 st.dataframe(data=weather_data_df)
 
-weather_dict = ig.create_weather_dict(weather_data_df)
-
-
-local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
-draw = ImageDraw.Draw(local_im)
-draw.line([0, 30, 270, 30], fill=1, width=1)
-draw.line([0, 340, 270, 340], fill=1, width=1)
-for i in range(12):
-    ig.add_month_to_image(weather_data_df, weather_dict, draw, i + 1)
+local_im = ig.image_construct(weather_data_df)
 
 
 st.image(local_im)
+
+level_df = ig.create_level_dataframe(weather_data_df)
+
+st.dataframe(level_df)
+
+piece_df = ig.create_piece_counter(level_df)
+
+
+st.dataframe(piece_df)

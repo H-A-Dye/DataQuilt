@@ -7,6 +7,7 @@ from dataquilt.image_generator import (
     create_month_series,
     create_weather_dict,
     create_level_dataframe,
+    create_piece_counter,
 )
 import pytest
 
@@ -50,4 +51,7 @@ def test_create_level_df():
 
 
 def test_create_counter():
-    pass
+    """Test piece counter dataframe"""
+    level_df = create_level_dataframe(MYDATA)
+    local_df = create_piece_counter(level_df)
+    assert list(local_df.columns) == ["Count"]

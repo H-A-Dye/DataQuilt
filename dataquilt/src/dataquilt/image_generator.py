@@ -195,7 +195,12 @@ def create_piece_counter(level_df: pd.DataFrame) -> Counter:
     """
     flat_list = level_df.to_numpy().flatten()
     counts = Counter(flat_list)
-    return counts
+    count_df = pd.DataFrame.from_dict(
+        counts,
+        orient="index",
+        columns=["Count"],
+    )
+    return count_df
 
 
 def add_month_to_image(
