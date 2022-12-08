@@ -1,6 +1,6 @@
 name: Python Package using Conda
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   default-shell:
@@ -19,7 +19,8 @@ jobs:
     - run: which python
     - run: conda update conda
     - run: conda env list
-    - run: conda env update --file environment.yml --name base 
+    - run: conda env update --file env.yml --name base 
+    - run: source activate base
 
     - name: Lint with flake8
       run: |

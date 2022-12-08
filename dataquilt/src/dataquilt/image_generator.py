@@ -93,7 +93,10 @@ def create_weather_dict(weather_data: pd.DataFrame) -> dict:
     return local_dict
 
 
-def grade_temp(temperature: int) -> int:
+def grade_temp(
+    weather_data: pd.DataFrame,
+    temperature: int,
+) -> int:
     """Takes a temperature value and returns a color level
     integer.
 
@@ -103,8 +106,10 @@ def grade_temp(temperature: int) -> int:
     Returns:
         int: color level
     """
-    temperature_range_max = max(MYDATA.TMAX) - min(MYDATA.TMAX)
-    temperature_min = min(MYDATA.TMAX)
+    weather_data.TMAX = pd.to_numeric(weather_data.TMAX, downcast="integer")
+    weather_data.TMIN = pd.to_numeric(weather_data.TMIN, downcast="integer")
+    temperature_range_max = max(weather_data.TMAX) - min(weather_data.TMAX)
+    temperature_min = min(weather_data.TMAX)
     temperature_bin_size = temperature_range_max // 15 + 1
     temperature = temperature - temperature_min
     color = temperature // temperature_bin_size
@@ -131,7 +136,10 @@ def make_color(local_level: int) -> tuple:
 
 
 def add_month_to_image(
-    weather_dict: dict, drawobject: ImageDraw.ImageDraw, month_number: int = 1
+    weather_data: pd.DataFrame,
+    weather_dict: dict,
+    drawobject: ImageDraw.ImageDraw,
+    month_number: int = 1,
 ):
     """Adds a month of data to the quilt Image
 
@@ -149,8 +157,8 @@ def add_month_to_image(
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
         dict_entry = weather_dict.get(DayData(month_number, i + 1))
-        high_temp = dict_entry.high_temperature
-        level = grade_temp(high_temp)
+        high_temp = int(dict_entry.high_temperature)
+        level = grade_temp(weather_data, high_temp)
         if level < 0 or level > 14:
             raise KeyError(f"{level}")
         color_tuple = make_color_kona(level)
@@ -170,7 +178,7 @@ def the_main():
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
-        add_month_to_image(weather_dict, draw, i + 1)
+        add_month_to_image(MYDATA, weather_dict, draw, i + 1)
     local_im.show()
 
 
