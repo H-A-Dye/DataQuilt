@@ -10,7 +10,6 @@
     make_color
     add_month_to_image
     the_main
-
     Misc. variables:
     COMMONDAYS - number of days in each month in a common year
     COLORBASE - RGB value
@@ -18,7 +17,7 @@
     MYDATA - pandas data frame
     """
 import datetime
-from collections import namedtuple
+from collections import namedtuple, Counter
 
 import pandas as pd
 from PIL import Image, ImageDraw
@@ -183,6 +182,20 @@ def create_level_dataframe(weather_data: pd.DataFrame) -> pd.DataFrame:
             i + 1,
         )
     return local_df
+
+
+def create_piece_counter(level_df: pd.DataFrame) -> Counter:
+    """Flatten and count all elements in level dataframe
+
+    Args:
+        level_df (pd.DataFrame): table of levels
+
+    Returns:
+        Counter: piece count
+    """
+    flat_list = level_df.to_numpy().flatten()
+    counts = Counter(flat_list)
+    return counts
 
 
 def add_month_to_image(
