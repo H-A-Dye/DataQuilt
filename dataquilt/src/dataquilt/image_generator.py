@@ -135,6 +135,56 @@ def make_color(local_level: int) -> tuple:
     return colorrgb
 
 
+def create_month_series(
+    weather_data: pd.DataFrame,
+    weather_dict: dict,
+    month_number: int,
+) -> list:
+    """Creates a list with a month of quilt data
+
+    Args:
+        weather_data (pd.DataFrame)
+        weather_dict (dict): _description_
+        month_number (int, optional): _description_. Defaults to 1.
+    """
+    days = COMMONDAYS.get(month_number)
+    if len(weather_dict) == 366 and month_number == 2:
+        days = days + 1
+    level_list = []
+    for i in range(days):
+        dict_entry = weather_dict.get(DayData(month_number, i + 1))
+        high_temp = int(dict_entry.high_temperature)
+        level = grade_temp(weather_data, high_temp)
+        level_list.append(level)
+    if len(level_list) < 31:
+        for i in range(31 - len(level_list)):
+            level_list.append(0)
+    return level_list
+
+
+def create_level_dataframe(weather_data: pd.DataFrame) -> pd.DataFrame:
+    """Creates a data frame of level data for entire year
+
+    Args:
+        weather_data (pd.DataFrame): _description_
+        weather_dict (dict): _description_
+
+        month_number (int, optional): _description_. Defaults to 1.
+
+    Returns:
+        pd.DataFrame: _description_
+    """
+    local_dict = create_weather_dict(weather_data)
+    local_df = pd.DataFrame()
+    for i in range(12):
+        local_df[str(i + 1)] = create_month_series(
+            weather_data,
+            local_dict,
+            i + 1,
+        )
+    return local_df
+
+
 def add_month_to_image(
     weather_data: pd.DataFrame,
     weather_dict: dict,
@@ -144,6 +194,7 @@ def add_month_to_image(
     """Adds a month of data to the quilt Image
 
     Args:
+        weather_data (pd.dataFrame)
         weather_dict (dict): _description_
         drawobject (PIL.ImageDraw.ImageDraw): _description_
         month_number (int, optional): _description_. Defaults to 1.
@@ -166,6 +217,25 @@ def add_month_to_image(
             print("uh oh")
             level = 1
         drawobject.rectangle([x_1, y_1, x_2, y_2], fill=color_tuple, outline=1)
+
+
+def image_construct(weather_data: pd.DataFrame) -> Image:
+    """Construct the image from the weather_data
+
+    Args:
+        weather_data (pd.DataFrame): a year of data from a weather station
+
+    Returns:
+        Image: data quilt image
+    """
+    weather_dict = create_weather_dict(weather_data)
+    local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
+    draw = ImageDraw.Draw(local_im)
+    draw.line([0, 30, 270, 30], fill=1, width=1)
+    draw.line([0, 340, 270, 340], fill=1, width=1)
+    for i in range(12):
+        add_month_to_image(weather_data, weather_dict, draw, i + 1)
+    return local_im
 
 
 def the_main():
