@@ -1,0 +1,15 @@
+pandas
+numpy
+setuptools
+black
+pytest
+requests
+pillow
+matplotlib
+swatch
+geopy
+streamlit      
+codecov
+pylint
+pre-commit
+-e ./dataquilt
