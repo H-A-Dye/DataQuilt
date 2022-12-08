@@ -47,3 +47,7 @@ def test_create_level_df():
     """Test for correct shape of df"""
     local_df = create_level_dataframe(MYDATA)
     assert local_df.shape == (31, 12)
+
+
+def test_create_counter():
+    pass
