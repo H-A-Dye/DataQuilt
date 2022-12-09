@@ -88,3 +88,12 @@ piece_df = ig.create_piece_counter(level_df)
 st.dataframe(piece_df)
 
 borb_pattern(piece_df, level_df)
+
+the_data = open("output.pdf", Adencoding="utf-8")
+
+st.download_button(
+    "Download PDF",
+    data=the_data,
+    file_name="pdf_test.pdf",
+    mime="application/pdf",
+)
