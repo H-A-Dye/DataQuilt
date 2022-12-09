@@ -7,6 +7,8 @@ import dataquilt.weather_station_inv as dw
 import dataquilt.data_from_api as da
 import dataquilt.image_generator as ig
 
+from pdf_borb import borb_pattern
+
 # python -m pip install -e .\dataquilt
 
 
@@ -74,6 +76,8 @@ local_im = ig.image_construct(weather_data_df)
 
 st.image(local_im)
 
+local_im.save("localpic.jpg")
+
 level_df = ig.create_level_dataframe(weather_data_df)
 
 st.dataframe(level_df)
@@ -82,3 +86,5 @@ piece_df = ig.create_piece_counter(level_df)
 
 
 st.dataframe(piece_df)
+
+borb_pattern(piece_df, level_df)

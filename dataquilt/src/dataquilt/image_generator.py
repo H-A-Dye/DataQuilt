@@ -200,6 +200,7 @@ def create_piece_counter(level_df: pd.DataFrame) -> Counter:
         orient="index",
         columns=["Count"],
     )
+    count_df = count_df.sort_index()
     return count_df
 
 
