@@ -89,7 +89,7 @@ st.dataframe(piece_df)
 
 borb_pattern(piece_df, level_df)
 
-the_data = open("output.pdf", Adencoding="utf-8")
+the_data = open("output.pdf", "rb")
 
 st.download_button(
     "Download PDF",
