@@ -4,16 +4,20 @@ from borb.pdf import PageLayout
 from borb.pdf import SingleColumnLayout
 from borb.pdf import Paragraph
 from borb.pdf import PDF
-from borb.pdf import Image
+
+# from borb.pdf import Image
 from borb.pdf import OrderedList
 
 # from borb.pdf import TableUtil
 from borb.pdf import FlexibleColumnWidthTable
+import pandas as pd
 
+# from PIL import Image
 
 from decimal import Decimal
-from pathlib import Path
-from collections import defaultdict
+
+# from pathlib import Path
+# from collections import defaultdict
 
 COMMONDAYS = {
     1: 31,
@@ -31,19 +35,10 @@ COMMONDAYS = {
 }
 
 
-def colorlist():
-    local_dict = defaultdict(int)
-    for i in range(15):
-        local_dict[str(i)] = 10
-    return local_dict
-
-
-def color_table():
-    x = [[str(i * j) for i in range(10)] for j in range(10)]
-    return x
-
-
-def main():
+def borb_pattern(
+    count: pd.DataFrame,
+    levels: pd.DataFrame,
+):
     # create Document
     doc: Document = Document()
 
@@ -65,13 +60,6 @@ def main():
             "and a range of 15 colors for this quilt",
         )
     )
-    layout.add(
-        Image(
-            Path("MinisAreForME.jpg"),
-            width=Decimal(128),
-            height=Decimal(128),
-        )
-    )
 
     layout.add(Paragraph("Background Fabric"))
     layout.add(
@@ -86,12 +74,12 @@ def main():
         .add(Paragraph("(11) 1.5 by 31.5 inch strips for inner borders"))
         .add(Paragraph("(10) 1.5 by 1.5 inch squares"))
     )
-    color_count = colorlist()
+
     layout.add(Paragraph("Temperature Fabric"))
 
     square_list: OrderedList = OrderedList()
-    for (val, count) in enumerate(color_count):
-        square_list.add(Paragraph(f"{color_count.get(str(val))} squares"))
+    for x in range(15):
+        square_list.add(Paragraph(f"Color {x}, squares {count.iloc[x,0]}"))
     layout.add(square_list)
 
     # create Page
@@ -106,19 +94,42 @@ def main():
     # add a Paragraph
     layout2.add(Paragraph("Temperature Quilt"))
     flex_table: FlexibleColumnWidthTable = FlexibleColumnWidthTable(
-        number_of_columns=13, number_of_rows=32
+        number_of_columns=13,
+        number_of_rows=32,
+    )
+    flex_table.set_padding_on_all_cells(
+        Decimal(2),
+        Decimal(2),
+        Decimal(2),
+        Decimal(2),
     )
     flex_table.add(Paragraph("Month"))
     for ix in range(12):
         flex_table.add(Paragraph(f"{ix + 1 }"))
-
+    for i in range(len(levels)):
+        flex_table.add(Paragraph(f"Day {i+1}"))
+        for j in range(12):
+            flex_table.add(Paragraph(f"{levels.iloc[i,j]}"))
     layout2.add(flex_table)
 
+    # add Page to Document
+
+    # create Page
+    page3: Page = Page()
+
+    doc.add_page(page3)
+
+    # set a PageLayout
+    layout3: PageLayout = SingleColumnLayout(page3)
+
+    # layout3.add(Image("localpic.jpg"))
+    layout3.add(Paragraph("Pic goes here"))
+
     # store
-    with open("output1.pdf", "wb") as pdf_file_handle:
+    with open("output.pdf", "wb") as pdf_file_handle:
         PDF.dumps(pdf_file_handle, doc)
     return doc
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#  main()
