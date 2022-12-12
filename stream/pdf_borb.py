@@ -5,14 +5,14 @@ from borb.pdf import SingleColumnLayout
 from borb.pdf import Paragraph
 from borb.pdf import PDF
 
-# from borb.pdf import Image
+from borb.pdf import Image
 from borb.pdf import OrderedList
 
 # from borb.pdf import TableUtil
 from borb.pdf import FlexibleColumnWidthTable
 import pandas as pd
 
-# from PIL import Image
+import PIL as pl
 
 from decimal import Decimal
 
@@ -36,6 +36,7 @@ COMMONDAYS = {
 
 
 def borb_pattern(
+    local_im: pl.Image,
     count: pd.DataFrame,
     levels: pd.DataFrame,
 ):
@@ -122,8 +123,8 @@ def borb_pattern(
     # set a PageLayout
     layout3: PageLayout = SingleColumnLayout(page3)
 
-    # layout3.add(Image("localpic.jpg"))
-    layout3.add(Paragraph("Pic goes here"))
+    layout3.add(Image(local_im))
+    layout3.add(Paragraph("S"))
 
     # store
     with open("output.pdf", "wb") as pdf_file_handle:
