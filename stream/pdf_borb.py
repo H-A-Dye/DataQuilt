@@ -15,6 +15,7 @@ import pandas as pd
 import PIL as pl
 
 from decimal import Decimal
+import dataquilt.colors_kona as ck
 
 # from pathlib import Path
 # from collections import defaultdict
@@ -67,8 +68,7 @@ def borb_pattern(
         OrderedList()
         .add(
             Paragraph(
-                "(2) 3.5 by 27.5 inch rectangles - top ",
-                "and bottom border",
+                "(2) 3.5 by 27.5 inch rectangles - top " + "and bottom border",
             )
         )
         .add(Paragraph("(2) 2.5 by 31.5 inch rectangles - side borders"))
@@ -80,7 +80,11 @@ def borb_pattern(
 
     square_list: OrderedList = OrderedList()
     for x in range(15):
-        square_list.add(Paragraph(f"Color {x}, squares {count.iloc[x,0]}"))
+        square_list.add(
+            Paragraph(
+                f"Color {x}, {count.iloc[x,0]}, {ck.COLORENNUMERATE.get(x)},",
+            )
+        )
     layout.add(square_list)
 
     # create Page
@@ -98,12 +102,7 @@ def borb_pattern(
         number_of_columns=13,
         number_of_rows=32,
     )
-    flex_table.set_padding_on_all_cells(
-        Decimal(2),
-        Decimal(2),
-        Decimal(2),
-        Decimal(2),
-    )
+
     flex_table.add(Paragraph("Month"))
     for ix in range(12):
         flex_table.add(Paragraph(f"{ix + 1 }"))
@@ -111,6 +110,12 @@ def borb_pattern(
         flex_table.add(Paragraph(f"Day {i+1}"))
         for j in range(12):
             flex_table.add(Paragraph(f"{levels.iloc[i,j]}"))
+    flex_table.set_padding_on_all_cells(
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+    )
     layout2.add(flex_table)
 
     # add Page to Document
@@ -122,9 +127,8 @@ def borb_pattern(
 
     # set a PageLayout
     layout3: PageLayout = SingleColumnLayout(page3)
-
+    layout3.add(Paragraph("Layout Diagram"))
     layout3.add(Image(local_im))
-    layout3.add(Paragraph("S"))
 
     # store
     with open("output.pdf", "wb") as pdf_file_handle:
