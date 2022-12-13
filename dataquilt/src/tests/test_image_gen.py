@@ -4,7 +4,7 @@ from dataquilt.image_generator import (
     TempData,
     the_main,
     extract_data,
-    create_month_series,
+    create_month_list,
     create_weather_dict,
     create_level_dataframe,
     create_piece_counter,
@@ -33,14 +33,14 @@ def test_create_dict(df=MYDATA):
 
 
 @pytest.mark.parametrize("test_input,expected", [(1, 31), (2, 31), (4, 31)])
-def test_create_month_series(
+def test_create_month_list(
     test_input,
     expected,
     df=MYDATA,
 ):
     """Test that lists are correct length"""
     weather_dict = create_weather_dict(df)
-    local_list = create_month_series(df, weather_dict, test_input)
+    local_list = create_month_list(df, weather_dict, test_input)
     assert len(local_list) == expected
 
 

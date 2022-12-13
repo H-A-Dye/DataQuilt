@@ -43,6 +43,7 @@ st.sidebar.markdown("This makes a visual model of a year of temperatures")
 st.sidebar.info("Read more about quilting", icon="ℹ️")
 
 zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
+year = st.text_input("Enter a previous year", max_chars=4)
 invlist = dw.load_weatherstation_inventory()
 inv_df = pd.DataFrame(invlist)
 inv_df = dw.sort_years_weatherstat(inv_df)
@@ -52,10 +53,25 @@ except ValueError:
     st.write("Not a valid zip code")
 
 
+center_heading_text = """
+    <style>
+        .col_heading   {text-align: center !important}
+    </style>          """
+
+center_row_text = """
+    <style>
+        td  {text-align: center !important}
+    </style>      """
+
+# Inject CSS with Markdown
+
+st.markdown(center_heading_text, unsafe_allow_html=True)
+st.markdown(center_row_text, unsafe_allow_html=True)
+
 inv_df = dw.attach_distances_to_inventory(loc_lat, loc_long, inv_df)
 shortlist = dw.sort_get_min_dist_weatherstat(inv_df)
 
-st.write("Top Ten Nearest Weather Stations")
+st.write("### The Ten closest Weather Stations")
 st.dataframe(data=shortlist)
 
 myweatherstations = da.create_weatherdata_dictionary(shortlist)
@@ -71,23 +87,24 @@ weather_data_df = myweatherstations.get(stationselect)
 
 st.dataframe(data=weather_data_df)
 
-local_im = ig.image_construct(weather_data_df)
+local_im = ig.construct_image(weather_data_df)
 
 
 st.image(local_im)
 
 local_im.save("localpic.jpg")
 
+st.write("### Color codes for fabric squares")
 level_df = ig.create_level_dataframe(weather_data_df)
 
 st.dataframe(level_df)
-
+st.write("### Total squares by color")
 piece_df = ig.create_piece_counter(level_df)
 
 
 st.dataframe(piece_df)
 
-borb_pattern(piece_df, level_df)
+borb_pattern(local_im, piece_df, level_df)
 
 the_data = open("output.pdf", "rb")
 

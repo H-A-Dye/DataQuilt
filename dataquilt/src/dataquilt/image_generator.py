@@ -134,17 +134,17 @@ def make_color(local_level: int) -> tuple:
     return colorrgb
 
 
-def create_month_series(
+def create_month_list(
     weather_data: pd.DataFrame,
     weather_dict: dict,
     month_number: int,
-) -> list:
+) -> list[int]:
     """Creates a list with a month of quilt data
 
     Args:
-        weather_data (pd.DataFrame)
-        weather_dict (dict): _description_
-        month_number (int, optional): _description_. Defaults to 1.
+        weather_data (pd.DataFrame): data frame from NOAA data
+        weather_dict (dict): key: DayData, values: TempData
+        month_number (int, optional): Number of the month Defaults to 1(JAN).
     """
     days = COMMONDAYS.get(month_number)
     if len(weather_dict) == 366 and month_number == 2:
@@ -176,7 +176,7 @@ def create_level_dataframe(weather_data: pd.DataFrame) -> pd.DataFrame:
     local_dict = create_weather_dict(weather_data)
     local_df = pd.DataFrame()
     for i in range(12):
-        local_df[str(i + 1)] = create_month_series(
+        local_df[str(i + 1)] = create_month_list(
             weather_data,
             local_dict,
             i + 1,
@@ -238,7 +238,7 @@ def add_month_to_image(
         drawobject.rectangle([x_1, y_1, x_2, y_2], fill=color_tuple, outline=1)
 
 
-def image_construct(weather_data: pd.DataFrame) -> Image:
+def construct_image(weather_data: pd.DataFrame) -> Image:
     """Construct the image from the weather_data
 
     Args:
