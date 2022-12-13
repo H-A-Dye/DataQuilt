@@ -34,13 +34,16 @@ col1, col2, col3 = st.sidebar.columns([1, 8, 1])
 with col1:
     st.write("")
 with col2:
-    st.write("Place Holder for image")
+    st.image("localpic.jpg")
 with col3:
     st.write("")
 
 st.sidebar.markdown(" ## Temperature Quilts")
-st.sidebar.markdown("This makes a visual model of a year of temperatures")
-st.sidebar.info("Read more about quilting", icon="ℹ️")
+st.sidebar.markdown("This makes a visual model of a year of temperatures.")
+st.sidebar.info(
+    "More about quilting at [www.heatheranndye.com](www.heatheranndye.com)",
+    icon="ℹ️",
+)
 
 zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
 year = st.text_input("Enter a previous year", max_chars=4)
