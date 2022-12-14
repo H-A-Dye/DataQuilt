@@ -24,6 +24,7 @@ COLORLIST = {
     "Honeysuckle": 490,
     "Cerise": 1066,
     "Berry": 1016,
+    "White": 1387,
 }
 COLORENNUMERATE = {
     0: "Celestial",
@@ -41,6 +42,7 @@ COLORENNUMERATE = {
     12: "Honeysuckle",
     13: "Cerise",
     14: "Berry",
+    15: "White",
 }
 
 MYKONA = swatch.parse(DATA_PATH / "kona365.ase")

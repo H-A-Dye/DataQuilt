@@ -46,10 +46,10 @@ st.sidebar.info(
 )
 
 zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
-year = st.text_input("Enter a previous year", max_chars=4)
+year = st.number_input("Enter a previous year", value=2021, max_value=2021)
 invlist = dw.load_weatherstation_inventory()
 inv_df = pd.DataFrame(invlist)
-inv_df = dw.sort_years_weatherstat(inv_df)
+inv_df = dw.sort_years_weatherstat(inv_df, year)
 try:
     loc_lat, loc_long = dw.zip2latlong(zip_code)
 except ValueError:
@@ -77,7 +77,7 @@ shortlist = dw.sort_get_min_dist_weatherstat(inv_df)
 st.write("### The Ten closest Weather Stations")
 st.dataframe(data=shortlist)
 
-myweatherstations = da.create_weatherdata_dictionary(shortlist)
+myweatherstations = da.create_weatherdata_dictionary(shortlist, str(year))
 missingdates = da.id_missing_data_dict(myweatherstations)
 output = da.check_for_complete_stations(missingdates)
 
@@ -90,7 +90,10 @@ weather_data_df = myweatherstations.get(stationselect)
 
 st.dataframe(data=weather_data_df)
 
-local_im = ig.construct_image(weather_data_df)
+level_df = ig.create_temp_level_df(weather_data_df)
+
+
+local_im = ig.construct_image_v2(level_df)
 
 
 st.image(local_im)
@@ -98,7 +101,6 @@ st.image(local_im)
 local_im.save("localpic.jpg")
 
 st.write("### Color codes for fabric squares")
-level_df = ig.create_level_dataframe(weather_data_df)
 
 st.dataframe(level_df)
 st.write("### Total squares by color")

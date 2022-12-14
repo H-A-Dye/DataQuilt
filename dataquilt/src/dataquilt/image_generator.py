@@ -22,7 +22,7 @@ from collections import namedtuple, Counter
 import pandas as pd
 from PIL import Image, ImageDraw
 
-from dataquilt.colors_kona import make_color_kona
+from dataquilt.colors_kona import make_color_kona, COLORENNUMERATE
 from dataquilt import DATA_PATH
 
 
@@ -49,6 +49,45 @@ COMMONDAYS = {
 }
 COLORBASE = (0, 0, 256)
 STEP = 256 // 15
+
+
+def create_temp_level_df(noaa_data: pd.DataFrame = MYDATA) -> pd.DataFrame:
+    """Create a weather data frame for maximum daily temperatures,
+    coded as levels. The level 15 represents a null value corresponding
+    to the color white.
+
+    Args:
+        noaa_data (pd.DataFrame): Data frame from raw noaa data
+
+    Returns:
+        pd.DataFrame: a 31 x 12 data frame with integer values.
+    """
+    my_dates = noaa_data.DATE
+    the_datetimes = my_dates.apply(
+        lambda x: datetime.datetime.strptime(
+            x,
+            "%Y-%m-%d",
+        )
+    )
+    the_months = the_datetimes.apply(lambda x: x.month)
+    the_days = the_datetimes.apply(lambda x: x.day)
+    noaa_data = noaa_data.assign(days=the_days)
+    noaa_data = noaa_data.assign(months=the_months)
+    my_levels = noaa_data.TMAX.apply(
+        lambda x: grade_temp(
+            noaa_data,
+            int(x),
+        )
+    )
+    noaa_data = noaa_data.assign(levels=my_levels)
+    my_small = noaa_data[["months", "days", "levels"]]
+    my_reshape = my_small.pivot(
+        index="days",
+        columns="months",
+        values="levels",
+    )
+    my_reshape = my_reshape.fillna(15.0)
+    return my_reshape
 
 
 def extract_data(x_entry: pd.Series) -> tuple[DayData, TempData]:
@@ -200,8 +239,46 @@ def create_piece_counter(level_df: pd.DataFrame) -> Counter:
         orient="index",
         columns=["Count"],
     )
+    # Remove at end of changes
+    if len(count_df) < 16:
+        count_df.loc[15] = [0]
+    color_names = []
+    color_code = []
+    for key in COLORENNUMERATE:
+        color_code.append(key)
+        color_names.append(COLORENNUMERATE[key])
     count_df = count_df.sort_index()
+    count_df = count_df.assign(code=color_code)
+    count_df = count_df.assign(color=color_names)
     return count_df
+
+
+def add_month_to_image_v2(
+    temp_data: pd.DataFrame,
+    drawobject: ImageDraw.ImageDraw,
+    month_number: int = 1,
+):
+    """Adds a month of data to the quilt Image
+
+    Args:
+        weather_data (pd.dataFrame)
+        weather_dict (dict): _description_
+        drawobject (PIL.ImageDraw.ImageDraw): _description_
+        month_number (int, optional): _description_. Defaults to 1.
+    """
+    for i in range(31):
+        x_1 = month_number * 20
+        x_2 = x_1 + 10
+        y_1 = 30 + i * 10
+        y_2 = y_1 + 10
+        level = temp_data.iloc[i, month_number - 1]
+        if level < 0 or level > 15:
+            raise KeyError(f"{level}")
+        color_tuple = make_color_kona(level)
+        if level is None:
+            raise KeyError("No Level")
+            level = 1
+        drawobject.rectangle([x_1, y_1, x_2, y_2], fill=color_tuple, outline=1)
 
 
 def add_month_to_image(
@@ -254,6 +331,25 @@ def construct_image(weather_data: pd.DataFrame) -> Image:
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
         add_month_to_image(weather_data, weather_dict, draw, i + 1)
+    return local_im
+
+
+def construct_image_v2(temp_data: pd.DataFrame) -> Image:
+    """Construct the image from the weather_data
+
+    Args:
+        temp_data (pd.DataFrame): temperature level data
+        from create_temp_level_df
+
+    Returns:
+        Image: data quilt image
+    """
+    local_im = Image.new(mode="RGB", size=(270, 370), color=(256, 256, 256))
+    draw = ImageDraw.Draw(local_im)
+    draw.line([0, 30, 270, 30], fill=1, width=1)
+    draw.line([0, 340, 270, 340], fill=1, width=1)
+    for i in range(12):
+        add_month_to_image_v2(temp_data, draw, i + 1)
     return local_im
 
 

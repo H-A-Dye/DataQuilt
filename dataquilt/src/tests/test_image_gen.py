@@ -8,6 +8,7 @@ from dataquilt.image_generator import (
     create_weather_dict,
     create_level_dataframe,
     create_piece_counter,
+    create_temp_level_df,
 )
 import pytest
 
@@ -15,6 +16,12 @@ import pytest
 def test_main_function():
 
     the_main()
+
+
+def test_create_temp_level_df():
+    """Test creation of a 31 x 12 data frame"""
+    local_df = create_temp_level_df(MYDATA)
+    assert local_df.shape == (31, 12)
 
 
 def test_extract_data():
@@ -54,4 +61,4 @@ def test_create_counter():
     """Test piece counter dataframe"""
     level_df = create_level_dataframe(MYDATA)
     local_df = create_piece_counter(level_df)
-    assert list(local_df.columns) == ["Count"]
+    assert list(local_df.columns) == ["Count", "code", "color"]
