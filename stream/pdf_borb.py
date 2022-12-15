@@ -79,7 +79,7 @@ def borb_pattern(
     layout.add(Paragraph("Temperature Fabric"))
 
     square_list: OrderedList = OrderedList()
-    for x in range(15):
+    for x in range(16):
         square_list.add(
             Paragraph(
                 f"Color {x}, {count.iloc[x,0]}, {ck.COLORENNUMERATE.get(x)},",

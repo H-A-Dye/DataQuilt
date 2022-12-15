@@ -126,6 +126,40 @@ def identify_missing_data(
     return local_list
 
 
+def find_complete_data(
+    ws_inv: pd.DataFrame,
+    theyear: str = "2021",
+) -> tuple[pd.DataFrame, int]:
+    """Iterates through the list of nearby weather stations to
+    find a complete data set. If none in the top ten, returns
+    the station with the fewest missing days.
+
+    Args:
+        ws_inv (pd.DataFrame): weather station inventory
+        theyear (str, optional): year of data. Defaults to "2021".
+
+    Returns:
+        pd.DataFrame: noaa data for the given year
+    """
+    missing_data = 366
+    for i in range(len(ws_inv)):
+        station_name = ws_inv.name.iloc[i]
+        # print(f"station name {station_name}")
+        local_df = get_temps_weatherstation(
+            theyear,
+            station_name,
+        )
+        data_check = identify_missing_data(local_df)
+        # print(len(data_check))
+        if len(data_check) == 0:
+            return local_df, 0
+        else:
+            if len(data_check) < missing_data:
+                missing_data = len(data_check)
+                best_df = local_df
+    return best_df, missing_data
+
+
 def id_missing_data_dict(
     local_weather_dict: dict,
 ) -> dict:

@@ -39,12 +39,19 @@ with col3:
     st.write("")
 
 st.sidebar.markdown(" ## Temperature Quilts")
-st.sidebar.markdown("This makes a visual model of a year of temperatures.")
+
+random_string = (
+    "This is a veeeeeeeeeeeeeeeeeeeeeeeeeery looooong striiiing. "
+    "And this is anooooooooother veeeeeeery loooooooong striiiing"
+)
+
+
+st.sidebar.markdown("This program makes a model of a year of temperatures.")
 st.sidebar.info(
     "More about quilting at [www.heatheranndye.com](www.heatheranndye.com)",
     icon="ℹ️",
 )
-
+st.markdown(random_string)
 zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
 year = st.number_input("Enter a previous year", value=2021, max_value=2021)
 invlist = dw.load_weatherstation_inventory()
@@ -77,16 +84,14 @@ shortlist = dw.sort_get_min_dist_weatherstat(inv_df)
 st.write("### The Ten closest Weather Stations")
 st.dataframe(data=shortlist)
 
-myweatherstations = da.create_weatherdata_dictionary(shortlist, str(year))
-missingdates = da.id_missing_data_dict(myweatherstations)
-output = da.check_for_complete_stations(missingdates)
+output = da.find_complete_data(shortlist, str(year))
 
-st.write(output)
-stationselect, num_dates_missing = output
+
+weather_data_df, num_dates_missing = output
 
 if num_dates_missing > 0:
     raise ValueError("Missing Dates")
-weather_data_df = myweatherstations.get(stationselect)
+
 
 st.dataframe(data=weather_data_df)
 
