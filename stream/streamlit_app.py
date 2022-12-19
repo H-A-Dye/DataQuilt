@@ -119,10 +119,10 @@ st.write("### Color codes for fabric squares")
 
 st.dataframe(level_df)
 st.write("### Total squares by color")
-piece_df = ig.create_piece_counter(level_df)
+
 
 bins = ig.create_bin_list(weather_data_df)
-
+piece_df = ig.create_piece_counter(level_df, bins)
 
 st.dataframe(piece_df)
 

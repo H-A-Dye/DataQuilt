@@ -88,7 +88,6 @@ def borb_pattern(
             info1 = f"Color: {x}, {count.iloc[x,1]},"
             info2 = f"Count: {count.iloc[x,2]}, Temp Max {count.iloc[x,3]}"
             square_list.add(Paragraph(info1, info2))
-            layout.add(square_list)
 
     layout.add(square_list)
 
