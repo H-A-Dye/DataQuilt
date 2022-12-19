@@ -63,16 +63,16 @@ def create_temp_level_df(noaa_data: pd.DataFrame = MYDATA) -> pd.DataFrame:
         pd.DataFrame: a 31 x 12 data frame with integer values.
     """
     my_dates = noaa_data.DATE
-    the_datetimes = my_dates.apply(
+    datetimes = my_dates.apply(
         lambda x: datetime.datetime.strptime(
             x,
             "%Y-%m-%d",
         )
     )
-    the_months = the_datetimes.apply(lambda x: x.month)
-    the_days = the_datetimes.apply(lambda x: x.day)
-    noaa_data = noaa_data.assign(days=the_days)
-    noaa_data = noaa_data.assign(months=the_months)
+    months = datetimes.apply(lambda x: x.month)
+    days = datetimes.apply(lambda x: x.day)
+    noaa_data = noaa_data.assign(days=days)
+    noaa_data = noaa_data.assign(months=months)
     my_levels = noaa_data.TMAX.apply(
         lambda x: grade_temp(
             noaa_data,
@@ -223,7 +223,10 @@ def create_level_dataframe(weather_data: pd.DataFrame) -> pd.DataFrame:
     return local_df
 
 
-def create_piece_counter(level_df: pd.DataFrame) -> Counter:
+def create_piece_counter(
+    level_df: pd.DataFrame,
+    binlist: list,
+) -> Counter:
     """Flatten and count all elements in level dataframe
 
     Args:
@@ -234,35 +237,55 @@ def create_piece_counter(level_df: pd.DataFrame) -> Counter:
     """
     flat_list = level_df.to_numpy().flatten()
     counts = Counter(flat_list)
-    count_df = pd.DataFrame.from_dict(
-        counts,
-        orient="index",
-        columns=["Count"],
-    )
     # Remove at end of changes
-    if len(count_df) < 16:
-        count_df.loc[15] = [0]
+    count_df = pd.DataFrame()
     color_names = []
     color_code = []
+    square_counts = []
+
     for key in COLORENNUMERATE:
         color_code.append(key)
         color_names.append(COLORENNUMERATE[key])
-    count_df = count_df.sort_index()
-    count_df = count_df.assign(code=color_code)
-    count_df = count_df.assign(color=color_names)
+        squares = counts[key]
+        if not squares:
+            squares = 0
+        square_counts.append(squares)
+    count_df["code"] = color_code
+    count_df["color"] = color_names
+    count_df["count"] = square_counts
+    count_df["Temperature_Max"] = binlist
     return count_df
 
 
+def create_bin_list(noaa_df: pd.DataFrame) -> list:
+    """Create a list of temperature ranges for the
+    piece counter
+    Args:
+        noaa_df (pd.DataFrame): noaa dataframe
+    Returns:
+        list: Maximum temperature for each color code
+    """
+    noaa_df.TMAX = pd.to_numeric(noaa_df.TMAX, downcast="integer")
+    noaa_df.TMIN = pd.to_numeric(noaa_df.TMIN, downcast="integer")
+    temperature_range_max = max(noaa_df.TMAX) - min(noaa_df.TMAX)
+    temperature_bound = min(noaa_df.TMAX)
+    bin_size = temperature_range_max // 15 + 1
+    bin_list = []
+    for i in range(15):
+        temperature_bound += bin_size
+        bin_list.append(temperature_bound)
+    bin_list.append("NA")
+    return bin_list
+
+
 def add_month_to_image_v2(
-    temp_data: pd.DataFrame,
+    temperature_df: pd.DataFrame,
     drawobject: ImageDraw.ImageDraw,
     month_number: int = 1,
 ):
     """Adds a month of data to the quilt Image
-
     Args:
-        weather_data (pd.dataFrame)
-        weather_dict (dict): _description_
+        temperature_df: (pd.dataFrame)
         drawobject (PIL.ImageDraw.ImageDraw): _description_
         month_number (int, optional): _description_. Defaults to 1.
     """
@@ -271,7 +294,7 @@ def add_month_to_image_v2(
         x_2 = x_1 + 10
         y_1 = 30 + i * 10
         y_2 = y_1 + 10
-        level = temp_data.iloc[i, month_number - 1]
+        level = temperature_df.iloc[i, month_number - 1]
         if level < 0 or level > 15:
             raise KeyError(f"{level}")
         color_tuple = make_color_kona(level)
