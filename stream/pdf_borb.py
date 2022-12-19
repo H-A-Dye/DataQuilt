@@ -15,10 +15,7 @@ import pandas as pd
 import PIL as pl
 
 from decimal import Decimal
-import dataquilt.colors_kona as ck
 
-# from pathlib import Path
-# from collections import defaultdict
 
 COMMONDAYS = {
     1: 31,
@@ -37,7 +34,7 @@ COMMONDAYS = {
 
 
 def borb_pattern(
-    local_im: pl.Image,
+    local_image: pl.Image,
     count: pd.DataFrame,
     levels: pd.DataFrame,
 ):
@@ -73,18 +70,26 @@ def borb_pattern(
         )
         .add(Paragraph("(2) 2.5 by 31.5 inch rectangles - side borders"))
         .add(Paragraph("(11) 1.5 by 31.5 inch strips for inner borders"))
-        .add(Paragraph("(10) 1.5 by 1.5 inch squares"))
     )
 
     layout.add(Paragraph("Temperature Fabric"))
+    intro = (
+        "The range of colors, piece counts, and "
+        "temperatures are given in the list "
+        "below. "
+    )
+    layout.add(Paragraph(intro))
+    background_exp = "The background color is white in " "the diagram."
+    layout.add(Paragraph(background_exp))
 
     square_list: OrderedList = OrderedList()
     for x in range(16):
-        square_list.add(
-            Paragraph(
-                f"Color {x}, {count.iloc[x,0]}, {ck.COLORENNUMERATE.get(x)},",
-            )
-        )
+        for x in range(16):
+            info1 = f"Color: {x}, {count.iloc[x,1]},"
+            info2 = f"Count: {count.iloc[x,2]}, Temp Max {count.iloc[x,3]}"
+            square_list.add(Paragraph(info1, info2))
+            layout.add(square_list)
+
     layout.add(square_list)
 
     # create Page
@@ -128,7 +133,7 @@ def borb_pattern(
     # set a PageLayout
     layout3: PageLayout = SingleColumnLayout(page3)
     layout3.add(Paragraph("Layout Diagram"))
-    layout3.add(Image(local_im))
+    layout3.add(Image(local_image))
 
     # store
     with open("output.pdf", "wb") as pdf_file_handle:
