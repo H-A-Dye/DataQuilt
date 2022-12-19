@@ -82,14 +82,26 @@ def borb_pattern(
     background_exp = "The background color is white in " "the diagram."
     layout.add(Paragraph(background_exp))
 
-    square_list: OrderedList = OrderedList()
+    flex_table1: FlexibleColumnWidthTable = FlexibleColumnWidthTable(
+        number_of_columns=4,
+        number_of_rows=17,
+    )
+    flex_table1.add(Paragraph("Code"))
+    flex_table1.add(Paragraph("Color"))
+    flex_table1.add(Paragraph("Count"))
+    flex_table1.add(Paragraph("Max Temp"))
     for x in range(16):
-        for x in range(16):
-            info1 = f"Color: {x}, {count.iloc[x,1]},"
-            info2 = f"Count: {count.iloc[x,2]}, Temp Max {count.iloc[x,3]}"
-            square_list.add(Paragraph(info1, info2))
-
-    layout.add(square_list)
+        flex_table1.add(Paragraph(f"{count.iloc[x, 0]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 1]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 2]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 3]}"))
+    flex_table1.set_padding_on_all_cells(
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+    )
+    layout.add(flex_table1)
 
     # create Page
     page2: Page = Page()
