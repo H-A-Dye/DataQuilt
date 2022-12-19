@@ -357,11 +357,11 @@ def construct_image(weather_data: pd.DataFrame) -> Image:
     return local_im
 
 
-def construct_image_v2(temp_data: pd.DataFrame) -> Image:
+def construct_image_v2(temperature_data: pd.DataFrame) -> Image:
     """Construct the image from the weather_data
 
     Args:
-        temp_data (pd.DataFrame): temperature level data
+        temperature_data (pd.DataFrame): temperature level data
         from create_temp_level_df
 
     Returns:
@@ -372,7 +372,7 @@ def construct_image_v2(temp_data: pd.DataFrame) -> Image:
     draw.line([0, 30, 270, 30], fill=1, width=1)
     draw.line([0, 340, 270, 340], fill=1, width=1)
     for i in range(12):
-        add_month_to_image_v2(temp_data, draw, i + 1)
+        add_month_to_image_v2(temperature_data, draw, i + 1)
     return local_im
 
 
