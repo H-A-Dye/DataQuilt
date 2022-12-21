@@ -28,9 +28,9 @@ COLORLIST = {
 }
 COLORENNUMERATE = {
     0: "Purple",
-    1: "Brt. Peri",
+    1: "Peri",
     2: "Deep Blue",
-    3: "Astral",
+    3: "Blueprint",
     4: "Water",
     5: "Caribbean",
     6: "Bluegrass",
