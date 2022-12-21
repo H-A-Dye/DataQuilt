@@ -50,8 +50,8 @@ def test_dictionary_type(color_dictionary):
 def test_dictionary_entry(color_dictionary):
     test_color = str(
         ColorInformation(
-            "Turquoise",
-            "RGBColor(R=58, G=193, B=225)",
+            "Peri",
+            "RGBColor(R=62, G=41, B=241)",
             "1",
         )
     )
