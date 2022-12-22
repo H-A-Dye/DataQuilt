@@ -56,7 +56,7 @@ st.sidebar.info(
 )
 
 zip_code = st.text_input("Enter a US zipcode", value="62269", max_chars=5)
-year = st.number_input("Enter a previous year", value=2021, max_value=2021)
+year = st.number_input("Enter a previous year", value=2021, max_value=2022)
 invlist = dw.load_weatherstation_inventory()
 inv_df = pd.DataFrame(invlist)
 inv_df = dw.sort_years_weatherstat(inv_df, year)
