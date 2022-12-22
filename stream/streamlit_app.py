@@ -93,7 +93,7 @@ output = da.find_complete_data(shortlist, str(year))
 weather_data_df, num_dates_missing = output
 
 if num_dates_missing > 0:
-    raise ValueError("Missing Dates")
+    st.write("Missing Dates")
 
 station_name = weather_data_df.STATION[0]
 
