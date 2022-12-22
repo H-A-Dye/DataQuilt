@@ -131,7 +131,7 @@ piece_df = ig.create_piece_counter(level_df, bins)
 
 st.dataframe(piece_df)
 
-borb_pattern(local_image, piece_df, level_df)
+borb_pattern(year, zip_code, local_image, piece_df, level_df)
 
 the_data = open("output.pdf", "rb")
 

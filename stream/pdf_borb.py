@@ -34,6 +34,8 @@ COMMONDAYS = {
 
 
 def borb_pattern(
+    year: int,
+    zip_code: str,
     local_image: pl.Image,
     count: pd.DataFrame,
     levels: pd.DataFrame,
@@ -52,15 +54,15 @@ def borb_pattern(
 
     # add a Paragraph
     layout.add(Paragraph("Temperature Quilt"))
-
+    layout.add(Paragraph(f"Zipcode: {zip_code},Year: {year}"))
     layout.add(
         Paragraph(
-            "You'll need a yard of background fabric",
+            "Fabric Requirements: One yard of background fabric",
             "and a range of 15 colors for this quilt",
         )
     )
 
-    layout.add(Paragraph("Background Fabric"))
+    layout.add(Paragraph("Background Fabric Cuts"))
     layout.add(
         OrderedList()
         .add(
