@@ -83,18 +83,20 @@ def borb_pattern(
     layout.add(Paragraph(background_exp))
 
     flex_table1: FlexibleColumnWidthTable = FlexibleColumnWidthTable(
-        number_of_columns=4,
+        number_of_columns=5,
         number_of_rows=17,
     )
     flex_table1.add(Paragraph("Code"))
     flex_table1.add(Paragraph("Color"))
     flex_table1.add(Paragraph("Count"))
-    flex_table1.add(Paragraph("Max Temp"))
+    flex_table1.add(Paragraph("Celsius"))
+    flex_table1.add(Paragraph("Fahrenheit"))
     for x in range(16):
         flex_table1.add(Paragraph(f"{count.iloc[x, 0]}"))
         flex_table1.add(Paragraph(f"{count.iloc[x, 1]}"))
         flex_table1.add(Paragraph(f"{count.iloc[x, 2]}"))
         flex_table1.add(Paragraph(f"{count.iloc[x, 3]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 4]}"))
     flex_table1.set_padding_on_all_cells(
         Decimal(1),
         Decimal(1),

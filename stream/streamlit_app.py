@@ -119,8 +119,13 @@ st.write("### Color codes for fabric squares")
 
 st.dataframe(level_df)
 st.write("### Total squares by color")
-
-
+bins_string = (
+    "This gives information about the "
+    "number of pieces in each temperature range. "
+    "The last two columns give "
+    "the maximum temperature for a color."
+)
+st.write(bins_string)
 bins = ig.create_bin_list(weather_data_df)
 piece_df = ig.create_piece_counter(level_df, bins)
 

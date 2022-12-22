@@ -29,5 +29,6 @@ def test_create_counter():
         "code",
         "color",
         "count",
-        "Temperature_Max",
+        "Celsius",
+        "Fahrenheit",
     ]

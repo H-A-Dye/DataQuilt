@@ -155,7 +155,13 @@ def create_piece_counter(
     count_df["code"] = color_code
     count_df["color"] = color_names
     count_df["count"] = square_counts
-    count_df["Temperature_Max"] = binlist
+    count_df["Celsius"] = binlist
+    fahrenheit = []
+    for i in range(15):
+        number = round(int(binlist[i]) * 9 / 5 + 32, 1)
+        fahrenheit.append(number)
+    fahrenheit.append("NA")
+    count_df["Fahrenheit"] = fahrenheit
     return count_df
 
 
@@ -170,12 +176,13 @@ def create_bin_list(noaa_df: pd.DataFrame) -> list:
     noaa_df.TMAX = pd.to_numeric(noaa_df.TMAX, downcast="integer")
     noaa_df.TMIN = pd.to_numeric(noaa_df.TMIN, downcast="integer")
     temperature_range_max = max(noaa_df.TMAX) - min(noaa_df.TMAX)
-    temperature_bound = min(noaa_df.TMAX)
+    temperature_bound = round(min(noaa_df.TMAX) / 10, 1)
     bin_size = temperature_range_max // 15 + 1
+    bin_size = round(bin_size / 10, 1)
     bin_list = []
     for i in range(15):
         temperature_bound += bin_size
-        bin_list.append(temperature_bound)
+        bin_list.append(round(temperature_bound, 1))
     bin_list.append("NA")
     return bin_list
 
