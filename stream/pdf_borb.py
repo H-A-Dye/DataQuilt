@@ -15,10 +15,7 @@ import pandas as pd
 import PIL as pl
 
 from decimal import Decimal
-import dataquilt.colors_kona as ck
 
-# from pathlib import Path
-# from collections import defaultdict
 
 COMMONDAYS = {
     1: 31,
@@ -37,7 +34,9 @@ COMMONDAYS = {
 
 
 def borb_pattern(
-    local_im: pl.Image,
+    year: int,
+    zip_code: str,
+    local_image: pl.Image,
     count: pd.DataFrame,
     levels: pd.DataFrame,
 ):
@@ -55,15 +54,17 @@ def borb_pattern(
 
     # add a Paragraph
     layout.add(Paragraph("Temperature Quilt"))
-
+    layout.add(Paragraph(f"Zipcode: {zip_code},Year: {year}"))
+    layout.add(Paragraph("Pattern by Heather Ann Dye"))
+    layout.add(Paragraph("www.heatheranndye.com"))
     layout.add(
         Paragraph(
-            "You'll need a yard of background fabric",
+            "Fabric Requirements: One yard of background fabric",
             "and a range of 15 colors for this quilt",
         )
     )
 
-    layout.add(Paragraph("Background Fabric"))
+    layout.add(Paragraph("Background Fabric Cuts"))
     layout.add(
         OrderedList()
         .add(
@@ -73,19 +74,40 @@ def borb_pattern(
         )
         .add(Paragraph("(2) 2.5 by 31.5 inch rectangles - side borders"))
         .add(Paragraph("(11) 1.5 by 31.5 inch strips for inner borders"))
-        .add(Paragraph("(10) 1.5 by 1.5 inch squares"))
     )
 
     layout.add(Paragraph("Temperature Fabric"))
+    intro = (
+        "The range of colors, piece counts, and "
+        "temperatures are given in the list "
+        "below. "
+    )
+    layout.add(Paragraph(intro))
+    background_exp = "The background color is white in " "the diagram."
+    layout.add(Paragraph(background_exp))
 
-    square_list: OrderedList = OrderedList()
-    for x in range(15):
-        square_list.add(
-            Paragraph(
-                f"Color {x}, {count.iloc[x,0]}, {ck.COLORENNUMERATE.get(x)},",
-            )
-        )
-    layout.add(square_list)
+    flex_table1: FlexibleColumnWidthTable = FlexibleColumnWidthTable(
+        number_of_columns=5,
+        number_of_rows=17,
+    )
+    flex_table1.add(Paragraph("Code"))
+    flex_table1.add(Paragraph("Color"))
+    flex_table1.add(Paragraph("Count"))
+    flex_table1.add(Paragraph("Celsius"))
+    flex_table1.add(Paragraph("Fahrenheit"))
+    for x in range(16):
+        flex_table1.add(Paragraph(f"{count.iloc[x, 0]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 1]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 2]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 3]}"))
+        flex_table1.add(Paragraph(f"{count.iloc[x, 4]}"))
+    flex_table1.set_padding_on_all_cells(
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+        Decimal(1),
+    )
+    layout.add(flex_table1)
 
     # create Page
     page2: Page = Page()
@@ -128,7 +150,7 @@ def borb_pattern(
     # set a PageLayout
     layout3: PageLayout = SingleColumnLayout(page3)
     layout3.add(Paragraph("Layout Diagram"))
-    layout3.add(Image(local_im))
+    layout3.add(Image(local_image))
 
     # store
     with open("output.pdf", "wb") as pdf_file_handle:
