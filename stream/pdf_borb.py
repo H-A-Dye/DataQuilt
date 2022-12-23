@@ -56,6 +56,7 @@ def borb_pattern(
     layout.add(Paragraph("Temperature Quilt"))
     layout.add(Paragraph(f"Zipcode: {zip_code},Year: {year}"))
     layout.add(Paragraph("Pattern by Heather Ann Dye"))
+    layout.add(Paragraph("www.heatheranndye.com"))
     layout.add(
         Paragraph(
             "Fabric Requirements: One yard of background fabric",
