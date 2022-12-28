@@ -1,10 +1,11 @@
 import pytest
-
+from PIL import Image, ImageDraw
 from dataquilt.colors_kona import (
     ColorInformation,
     RGBColor,
     color_conversion_rgb,
     make_kona_dictionary,
+    make_color_kona,
 )
 
 
@@ -56,3 +57,13 @@ def test_dictionary_entry(color_dictionary):
         )
     )
     assert str(color_dictionary.get(1)) == test_color
+
+
+def test_color_span():
+    """tests the color generation"""
+    local_image = Image.new(mode="RGB", size=(200, 200), color=(256, 256, 256))
+    draw = ImageDraw.Draw(local_image)
+    for i in range(15):
+        color = make_color_kona(i)
+        draw.rectangle([i * 10, 10, i * 10 + 10, 30], fill=color, outline=1)
+    local_image.show()
