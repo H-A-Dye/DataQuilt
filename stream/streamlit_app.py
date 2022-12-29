@@ -34,7 +34,7 @@ col1, col2, col3 = st.sidebar.columns([1, 8, 1])
 with col1:
     st.write("")
 with col2:
-    st.image("localpic.jpg")
+    st.image("samplequilt.jpg")
 with col3:
     st.write("")
 
