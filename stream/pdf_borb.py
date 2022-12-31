@@ -80,7 +80,10 @@ def borb_pattern(
     intro = (
         "The range of colors, piece counts, and "
         "temperatures are given in the list "
-        "below. "
+        "below. Each day is "
+        "represented by a 1 inch finished "
+        "square. Cut a 1.5 inch square for"
+        " each piece."
     )
     layout.add(Paragraph(intro))
     background_exp = "The background color is white in " "the diagram."
